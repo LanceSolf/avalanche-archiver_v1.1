@@ -32,9 +32,9 @@ body {
 }
 
 header {
-  background: var(--card-bg);
+  background: var(--primary-blue);
   padding: 1rem 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 }
 
@@ -47,8 +47,9 @@ header {
 .logo {
   font-weight: 800;
   font-size: 1.5rem;
-  color: var(--primary-blue);
+  color: white;
   text-decoration: none;
+  margin-left: 5px;
 }
 
 .date-nav {
@@ -68,161 +69,6 @@ header {
 
 .nav-arrow:hover {
   color: var(--primary-blue);
-}
-
-/* Bulletin Cards */
-.bulletin-card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  margin-bottom: 2rem;
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.bulletin-header {
-  padding: 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-}
-
-.region-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-/* Danger Level Section */
-.danger-section {
-  display: flex;
-  padding: 0;
-}
-
-.danger-level-bar {
-  width: 12px;
-  flex-shrink: 0;
-}
-
-/* Level classes for bar */
-.level-1 { background-color: var(--level-1); }
-.level-2 { background-color: var(--level-2); }
-.level-3 { background-color: var(--level-3); }
-.level-4 { background-color: var(--level-4); }
-.level-5 { background-color: var(--level-5); }
-
-.danger-content {
-  padding: 1.5rem;
-  flex-grow: 1;
-}
-
-.danger-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.danger-icon {
-  width: 48px;
-  height: 48px;
-}
-
-/* Avalanche Problems */
-.problems-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.problem-card {
-  background: #fdfdfd;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.problem-icon {
-  width: 60px;
-  height: 60px;
-  /* border-radius: 50%; Removed */
-  border: 3px solid #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  background-size: cover;
-  flex-shrink: 0;
-  margin-top: -10px;
-}
-
-.problem-details {
-  flex-grow: 1;
-}
-
-.problem-name {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-transform: capitalize;
-}
-
-.aspect-elevation-wrapper {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-/* Compass and Elevation placeholders - simplified */
-.compass-rose {
-  width: 60px;
-  height: 60px;
-  position: relative;
-  background: #eee;
-  border-radius: 50%;
-}
-
-.elevation-chart {
-  width: 60px;
-  height: 60px;
-  border: 1px solid #ddd;
-}
-
-/* Text Sections */
-.text-section {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-.text-section h3 {
-  color: var(--primary-blue);
-  border-bottom: 2px solid var(--primary-blue);
-  padding-bottom: 0.5rem;
-  display: inline-block;
-  margin-bottom: 1rem;
-}
-
-.highlight-box {
-  background: rgba(0, 68, 129, 0.05); /* slightly blue */
-  padding: 1rem;
-  border-left: 4px solid var(--primary-blue);
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-/* Map placeholder */
-.map-placeholder {
-  width: 100%;
-  height: 400px;
-  background: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-weight: 600;
-  border-radius: 8px;
-  margin-bottom: 2rem;
 }
 
 footer {
@@ -247,27 +93,11 @@ footer {
   text-decoration: none;
   color: var(--primary-blue);
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   font-weight: 500;
 }
 
 .archive-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.problem-icon.new_snow { background-image: url('assets/new_snow.webp'); }
-.problem-icon.wind_slab { background-image: url('assets/wind_slab.webp'); }
-.problem-icon.persistent_weak_layers { background-image: url('assets/persistent_weak_layers.webp'); }
-.problem-icon.wet_snow { background-image: url('assets/wet_snow.webp'); }
-.problem-icon.gliding_snow { background-image: url('assets/gliding_snow.webp'); }
-
-/* Compass Rose SVG Styling - we will inject SVGs */
-.compass-sector {
-  fill: #e0e0e0;
-  stroke: white;
-  stroke-width: 1px;
-}
-.compass-sector.active {
-  fill: #333;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
