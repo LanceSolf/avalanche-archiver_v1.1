@@ -8,7 +8,9 @@ const dataDir = path.join(__dirname, '../data');
 // Map RegionID -> Slug because we save to data/pdfs/{slug}/
 const REGION_PDF_MAP = {
     'DE-BY-11': 'allgau-prealps',
-    'DE-BY-12': 'allgau-alps-central'
+    'DE-BY-12': 'allgau-alps-central',
+    'DE-BY-13': 'allgau-alps-west',
+    'DE-BY-14': 'allgau-alps-east'
 };
 
 async function downloadPdf(url, destPath) {
@@ -17,7 +19,7 @@ async function downloadPdf(url, destPath) {
         fs.mkdirSync(path.dirname(destPath), { recursive: true });
 
         const file = fs.createWriteStream(destPath);
-        https.get(url, (response) => {
+        const request = https.get(url, (response) => {
             if (response.statusCode === 200) {
                 response.pipe(file);
                 file.on('finish', () => {
@@ -28,9 +30,17 @@ async function downloadPdf(url, destPath) {
                 fs.unlink(destPath, () => { });
                 reject(new Error(`Status ${response.statusCode}`));
             }
-        }).on('error', (err) => {
+        });
+
+        request.on('error', (err) => {
             fs.unlink(destPath, () => { });
             reject(err);
+        });
+
+        request.setTimeout(30000, () => {
+            request.destroy();
+            fs.unlink(destPath, () => { });
+            reject(new Error('Request timed out'));
         });
     });
 }

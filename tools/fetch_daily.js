@@ -50,17 +50,12 @@ https.get(url, (response) => {
             });
         });
     } else {
-        console.error(`Failed to fetch. Status Code: ${response.statusCode}`);
+        console.error(`Failed to fetch JSON. Status Code: ${response.statusCode}`);
         file.close();
-        fs.unlink(dest, () => { }); // Delete empty file
-        // Optional: failing the script so GitHub Action knows it failed
-        // process.exit(1);
-        // But for daily cron, maybe we don't want to crash the whole workflow if data isn't there yet?
-        // User requested "accessible ... at 1600". If it fails, we just don't have new data.
-        // Let's exit with 0 but log error.
+        fs.unlink(dest, () => { }); // Clean up incomplete file
     }
 }).on('error', (err) => {
-    console.error(`Error: ${err.message}`);
+    console.error(`Network Error: ${err.message}`);
     fs.unlink(dest, () => { });
     process.exit(1);
 });
