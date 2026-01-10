@@ -49,7 +49,8 @@ async function processBulletinForPdfs(bulletin, dateStr) {
     if (!bulletin.regions) return;
 
     // Check if this bulletin contains any of our target regions
-    const regions = bulletin.regions.map(r => r.regionID);
+    // Handle both object format (r.regionID) and string format
+    const regions = bulletin.regions.map(r => (typeof r === 'string' ? r : r.regionID));
 
     const matchedSlugs = [];
     for (const rid of regions) {
@@ -58,8 +59,9 @@ async function processBulletinForPdfs(bulletin, dateStr) {
         }
     }
 
-    if (matchedSlugs.length > 0 && bulletin.bulletinID) {
-        const uuid = bulletin.bulletinID;
+    const uuid = bulletin.id || bulletin.bulletinID;
+
+    if (matchedSlugs.length > 0 && uuid) {
         const url = `https://admin.lawinen-warnung.eu/albina/api/bulletins/${uuid}/pdf?region=DE-BY&lang=en&grayscale=false`;
 
         console.log(`Found relevant bulletin ${uuid} for regions: ${matchedSlugs.join(', ')}`);
