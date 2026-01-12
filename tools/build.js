@@ -187,6 +187,22 @@ const REGION_CONFIG = {
 
 
 
+    // --- Build Recent Profiles Page ---
+    const profilesPath = path.join(__dirname, '../data/recent_profiles.json');
+    let recentProfiles = [];
+    if (fs.existsSync(profilesPath)) {
+        try {
+            recentProfiles = JSON.parse(fs.readFileSync(profilesPath, 'utf8'));
+            const profilesDir = path.join(archiveDir, 'profiles');
+            if (!fs.existsSync(profilesDir)) fs.mkdirSync(profilesDir, { recursive: true });
+
+            const profilesHtml = generateProfilesPage(recentProfiles);
+            fs.writeFileSync(path.join(profilesDir, 'index.html'), profilesHtml);
+        } catch (e) {
+            console.error('Failed to load recent profiles', e);
+        }
+    }
+
     // 3. Generate Global Landing Page
     const regionsList = Object.keys(REGION_CONFIG).map(id => ({
         text: REGION_CONFIG[id].label,
@@ -199,6 +215,14 @@ const REGION_CONFIG = {
             text: '⚠️ Avalanche Incidents',
             href: 'archive/incidents/index.html',
             className: 'landing-incident-item' // Red accent class
+        });
+    }
+
+    // Add Profiles Link
+    if (recentProfiles.length > 0) {
+        regionsList.push({
+            text: '❄️ Latest Snow Profiles',
+            href: 'archive/profiles/index.html'
         });
     }
 
@@ -256,6 +280,56 @@ function generateIndexPage(title, relativeRoot, items, isMain = false, backLink 
 </html>`;
 }
 
+function generateProfilesPage(profiles) {
+    const cssPath = `../../styles.css`;
+    const profileItems = profiles.map(p => `
+        <div class="station-card">
+            <div class="station-header">
+                <h2 class="station-name">${p.name || 'Snow Profile'}</h2>
+                <span class="latest-update">${p.datum}</span>
+            </div>
+            <div class="data-grid">
+               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">${p.seehoehe || '-'} m</span></div>
+               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">${translateAspect(p.exposition)}</span></div>
+               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">${p.hangneigung || '-'}°</span></div>
+            </div>
+            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_${p.profil_id}.png?v=${p.revision || 1}" target="_blank" class="source-link">View Profile &rarr;</a>
+        </div>
+    `).join('');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest Snow Profiles</title>
+    <link rel="stylesheet" href="${cssPath}">
+    <style>
+        .profile-list { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top:2rem; }
+        .station-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+        .station-header { border-bottom: 2px solid var(--primary-blue); margin-bottom: 1rem; padding-bottom: 0.5rem; display:flex; justify-content:space-between; align-items:center; }
+        .station-name { font-size: 1.1rem; margin:0; color: var(--primary-blue); font-weight:700; }
+        .latest-update { font-size: 0.85rem; color: var(--text-secondary); }
+        .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .data-item { display:flex; flex-direction:column; }
+        .data-label { font-size: 0.75rem; text-transform:uppercase; color: var(--text-secondary); }
+        .data-value { font-weight: 600; }
+        .source-link { color: var(--accent-red); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
+        <h1>Latest Snow Profiles (7 Days)</h1>
+        <div class="profile-list">
+            ${profileItems}
+        </div>
+        <div style="margin-top:2rem"><a href="../../index.html">&larr; Back</a></div>
+    </div>
+</body>
+</html>`;
+}
+
 
 function generateIncidentPage(inc) {
     const details = inc.details || {};
@@ -277,6 +351,30 @@ function generateIncidentPage(inc) {
             <div class="meta-item"><strong>Coordinates:</strong> ${inc.lat}, ${inc.lon}</div>
         </div>
     `;
+
+    // Linked Profiles
+    let profilesHtml = '';
+    if (inc.linked_profiles && inc.linked_profiles.length > 0) {
+        profilesHtml = `
+        <div class="incident-profiles" style="margin-top:2rem; padding-top:1rem; border-top:1px solid #eee;">
+            <h3>Nearby Snow Profiles</h3>
+            <p style="color:#666; font-size:0.9rem;">Snow pits within 500m & 7 days.</p>
+            <div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top:1rem;">
+                ${inc.linked_profiles.map(p => `
+                    <div style="background:#f0f9ff; padding:1rem; border-radius:8px; border:1px solid #bae6fd;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                            <strong>${p.date.split(' ')[0]}</strong>
+                            <span style="color:#0284c7;">${p.dist_km} km away</span>
+                        </div>
+                        <div style="font-size:0.9rem; margin-bottom:0.5rem;">
+                            Elev: ${p.elevation}m | Aspect: ${translateAspect(p.aspect)}
+                        </div>
+                        <a href="${p.url}" target="_blank" style="color:#0284c7; font-weight:bold; text-decoration:underline;">View Profile &rarr;</a>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
 
     // Images
     let galleryHtml = '';
@@ -346,6 +444,8 @@ function generateIncidentPage(inc) {
         <div class="incident-detail-container">
             ${infoGrid}
             
+            ${profilesHtml}
+
             ${descriptionHtml}
 
             ${galleryHtml}
@@ -362,7 +462,9 @@ function generateIncidentPage(inc) {
 }
 
 function translateAspect(id) {
+    if (!id) return '-';
+    // Handle both ID (1-8) and direct string values if API returns them
     const map = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-    if (id >= 1 && id <= 8) return map[id - 1];
+    if (typeof id === 'number' && id >= 1 && id <= 8) return map[id - 1];
     return id;
 }

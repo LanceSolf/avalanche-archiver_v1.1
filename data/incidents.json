@@ -103,7 +103,8 @@
       },
       "images": [],
       "comments_en": null
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 9698,
@@ -192,7 +193,8 @@
         }
       },
       "comments_en": "At 12:19 p.m., the emergency dispatch center was informed of an avalanche on the closed natural toboggan run below the Hornbachalpe. Immediate on-site investigations revealed that the closed toboggan run was completely buried in two places. An avalanche transceiver search was immediately conducted, followed by a Recco search. Since no signals were detected, the affected areas were probed. The search proved unsuccessful, and the operation was called off at 2:39 p.m. Fortunately—despite the closure, the path and toboggan run were heavily frequented (winter hikers, tobogganers, ski tourers)—no one was buried or injured. Source & Image: Götzis Police Department"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 9729,
@@ -299,7 +301,8 @@
       },
       "images": [],
       "comments_en": "One person involved (further circumstances unknown)"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 9470,
@@ -394,7 +397,8 @@
       },
       "images": [],
       "comments_en": "Two young men set out on foot from Wildental towards the Mindelheimer Hütte via the Kemptner Scharte pass in heavy snow and poor visibility. Shortly before reaching the pass, an avalanche broke loose and swept both men (aged 23 and 18) approximately 200 meters down the mountain. One of them managed to free himself from the snow and then helped his companion, who was partially buried, out of the snow. He tended to his companion, who was bleeding from the head and shin, and called for help. The 23-year-old also suffered abrasions, contusions, and a shoulder injury. Despite the adverse weather conditions, both men were rescued by helicopter and then transported by ambulance to the hospital in Immenstadt."
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 9760,
@@ -497,7 +501,8 @@
       },
       "images": [],
       "comments_en": "A wet loose snow avalanche, which started in a rocky gully near the Widderstein summit, grew larger in the cirque below the Karlstor by carrying along the moistened layer of fresh snow from the middle of the week and pushed far down into the Flache Tälchen valley."
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 9527,
@@ -608,7 +613,16 @@
         }
       },
       "comments_en": "During the last run on the blue-marked piste 20, two skiers equipped with emergency gear stopped at the edge of the piste in the Mitteldiedamskopf-Alpe area. The 26-year-old left the marked piste and ventured into the backcountry. Immediately afterward, a slab avalanche broke loose, sweeping him away and burying him completely. His companion, who had remained on the marked piste, skied down the avalanche debris and, using surface searching, located her companion's legs/ski boots protruding from the snow. She called for help and immediately began digging the buried man out. She was assisted by arriving helpers and the mountain rescue team. After being rescued, the buried man was given CPR for an extended period. Unfortunately, the resuscitation efforts were unsuccessful. Source: Au Police Inspectorate"
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 8920,
+        "date": "2019-01-07 11:15:00",
+        "dist_km": "0.105",
+        "elevation": 1595,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_8920.png?v=1"
+      }
+    ]
   },
   {
     "id": 9787,
@@ -711,7 +725,23 @@
       },
       "images": [],
       "comments_en": "Two ski tourers (a married couple) were traversing the terrain from Hahnenköpfle towards Hoher Ifen and then skied down the so-called \"Ifenmulde\" (Ifen basin). During the descent, the 60-year-old man, who was skiing ahead, triggered an avalanche approximately 50 meters wide and 450 meters long. He was caught in the avalanche, carried approximately 245 meters, and buried. His wife was unharmed. Eyewitnesses to the incident alerted the rescue services, who located the man about an hour later using a probe at a depth of three meters and were able to dig him out. Resuscitation attempts by two emergency physicians at the scene were unsuccessful. Source: PI Kleinwalsertal; modified text: Pecl A., LWD Vorarlberg"
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 10973,
+        "date": "2019-12-16 10:45:00",
+        "dist_km": "0.064",
+        "elevation": 2120,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10973.png?v=2"
+      },
+      {
+        "id": 10974,
+        "date": "2019-12-16 09:00:00",
+        "dist_km": "0.094",
+        "elevation": 2107,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10974.png?v=2"
+      }
+    ]
   },
   {
     "id": 9901,
@@ -822,7 +852,37 @@
         }
       },
       "comments_en": "Two ski tourers were traversing the Ifen basin towards the Hoher Ifen when they triggered an avalanche. One of them was swept approximately 30 meters but was not buried. No one was injured. Both then continued their tour. Source: PI Kleinwalsertal and surveys by the LWK Kleinwalsertal – see also snow profile from December 11, 2020; Photo: LWD Pecl"
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 12878,
+        "date": "2020-12-11 08:45:00",
+        "dist_km": "0.000",
+        "elevation": 2081,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12878.png?v=1"
+      },
+      {
+        "id": 12787,
+        "date": "2020-12-03 12:15:00",
+        "dist_km": "0.201",
+        "elevation": 2100,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12787.png?v=1"
+      },
+      {
+        "id": 12786,
+        "date": "2020-12-03 13:30:00",
+        "dist_km": "0.231",
+        "elevation": 2030,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12786.png?v=1"
+      },
+      {
+        "id": 12791,
+        "date": "2020-12-03 13:15:00",
+        "dist_km": "0.270",
+        "elevation": 2174,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12791.png?v=1"
+      }
+    ]
   },
   {
     "id": 10354,
@@ -929,7 +989,8 @@
       },
       "images": [],
       "comments_en": "Avalanche parameters estimated by the Alpine police;"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10601,
@@ -1036,7 +1097,16 @@
       },
       "images": [],
       "comments_en": "One freerider was skiing alone and was reported missing in the evening. He was found dead in an avalanche by mountain rescue the following morning. He was carrying an activated avalanche transceiver and an airbag, which had not deployed. Several details are still unclear (slope at least 35 degrees, exact altitude, entry point, avalanche dimensions, etc.). Source: Kleinwalsertal Police Inspectorate"
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 18854,
+        "date": "2023-02-07 11:30:00",
+        "dist_km": "0.424",
+        "elevation": 1860,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_18854.png?v=3"
+      }
+    ]
   },
   {
     "id": 10652,
@@ -1144,7 +1214,8 @@
       },
       "images": [],
       "comments_en": "A group of nine skiers was on the Hählekopf mountain. During the descent – they were skiing one at a time – the fourth person triggered an avalanche and was partially buried. They were able to free themselves and, like everyone else, remained unharmed. Source: written information with estimated key data submitted to the avalanche warning service by one of the participants."
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10651,
@@ -1239,7 +1310,8 @@
       },
       "images": [],
       "comments_en": "A ski tourer triggered an avalanche approximately 200 meters wide and 300 meters long (slope measured at least 35 degrees according to the map) while descending about 100 meters below the summit. He was swept away for about 300 meters and buried up to his chest. He was able to free himself and was unharmed. His companion was not caught in the avalanche. They notified the rescue coordination center of the incident. For safety reasons, a search was then conducted by the mountain rescue team using avalanche transceivers. Source: Kleinwalsertal Police Inspectorate"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10796,
@@ -1337,7 +1409,8 @@
       },
       "images": [],
       "comments_en": "Coordinates not verified"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10797,
@@ -1431,7 +1504,8 @@
       },
       "images": [],
       "comments_en": null
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10791,
@@ -1521,7 +1595,8 @@
       },
       "images": [],
       "comments_en": "Coordinates not verified"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10770,
@@ -1636,7 +1711,16 @@
         }
       },
       "comments_en": "Two skiers were skiing individually down the northwest-facing slope of the Steinmandl when the skier in front triggered a small avalanche. Based on the tracks, the skier in front was likely carried approximately 30 meters but not buried. The two skiers then continued skiing towards the Gerachsattel. A witness, who observed this from the Hählekopf and believed one person was buried, reported the incident to the emergency services."
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 20727,
+        "date": "2024-01-09 11:50:00",
+        "dist_km": "0.047",
+        "elevation": 1960,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_20727.png?v=2"
+      }
+    ]
   },
   {
     "id": 10872,
@@ -1720,7 +1804,8 @@
       },
       "images": [],
       "comments_en": "Coordinates not verified"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10883,
@@ -1827,7 +1912,8 @@
         }
       },
       "comments_en": "A small slab avalanche was triggered upon entering a very steep north-facing slope; Source: Feedback to the avalanche warning service"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10912,
@@ -1924,7 +2010,8 @@
         }
       },
       "comments_en": "A group of ski tourers observed a cornice collapse, resulting in a wet avalanche. Because objects were swept along in the avalanche path and the group could not rule out the possibility that people were involved, they reported the incident and initiated a search for safety. This search ultimately proved unsuccessful. Therefore, no further data on the avalanche was collected. Source + Image: PI Kleinwalsertal"
-    }
+    },
+    "linked_profiles": []
   },
   {
     "id": 10986,
@@ -2036,6 +2123,15 @@
         }
       },
       "comments_en": "Two ski tourers (male, 22 years old; female, 26 years old) intended to ascend the Hoher Ifen from the Hahnenköpfle mountain station via the Ifenmulde and the winter ascent route, despite poor visibility and weather conditions. According to their own statements, they had previously conducted an ECT test in the open terrain above the Hahnenköpfle mountain station and, based on this, decided not to ascend the Ifen but to descend to the valley via the Ifenmulde. They then traversed the approximately 35-degree steep northeast-facing slope in the Ifenmulde area at intervals of about 30 meters. At that moment, a slab avalanche released about 10 meters above the ski tourer in front, sweeping him along but not burying him. His companion was not caught in the avalanche. The two immediately reported the avalanche to the RFL (Regional Ski Association) and then continued their descent independently. Source: Alpine Police / adapted text LWD Vlbg"
-    }
+    },
+    "linked_profiles": [
+      {
+        "id": 22380,
+        "date": "2024-12-16 09:15:00",
+        "dist_km": "0.077",
+        "elevation": 2000,
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_22380.png?v=2"
+      }
+    ]
   }
 ]

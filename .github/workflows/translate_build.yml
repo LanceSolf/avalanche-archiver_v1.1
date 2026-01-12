@@ -28,6 +28,9 @@ jobs:
           GCP_TRANSLATE_KEY: ${{ secrets.GCP_TRANSLATE_KEY }}
         run: npm run fetch
 
+      - name: Fetch Profiles
+        run: node tools/process_profiles.js
+
       - name: Build site
         run: npm run build
 
