@@ -11,6 +11,16 @@ if (fs.existsSync(archiveDir)) {
 }
 fs.mkdirSync(archiveDir, { recursive: true });
 
+// Copy Images
+const incImgSrc = path.join(dataDir, 'incident_images');
+if (fs.existsSync(incImgSrc)) {
+    fs.cpSync(incImgSrc, path.join(archiveDir, 'incident_images'), { recursive: true });
+}
+const profImgSrc = path.join(dataDir, 'profile_images');
+if (fs.existsSync(profImgSrc)) {
+    fs.cpSync(profImgSrc, path.join(archiveDir, 'profile_images'), { recursive: true });
+}
+
 const REGION_CONFIG = {
     'allgau-prealps': {
         label: 'Allgäu Prealps (Sonthofen)',
@@ -360,7 +370,9 @@ function generateIncidentPage(inc) {
             <h3>Nearby Snow Profiles</h3>
             <p style="color:#666; font-size:0.9rem;">Snow pits within 500m & 7 days.</p>
             <div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top:1rem;">
-                ${inc.linked_profiles.map(p => `
+                ${inc.linked_profiles.map(p => {
+            const imgUrl = p.local_path ? `../../${p.local_path}` : p.url;
+            return `
                     <div style="background:#f0f9ff; padding:1rem; border-radius:8px; border:1px solid #bae6fd;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
                             <strong>${p.date.split(' ')[0]}</strong>
@@ -369,9 +381,10 @@ function generateIncidentPage(inc) {
                         <div style="font-size:0.9rem; margin-bottom:0.5rem;">
                             Elev: ${p.elevation}m | Aspect: ${translateAspect(p.aspect)}
                         </div>
-                        <a href="${p.url}" target="_blank" style="color:#0284c7; font-weight:bold; text-decoration:underline;">View Profile &rarr;</a>
+                        <a href="${imgUrl}" target="_blank" style="color:#0284c7; font-weight:bold; text-decoration:underline;">View Profile &rarr;</a>
                     </div>
-                `).join('')}
+                `;
+        }).join('')}
             </div>
         </div>`;
     }
@@ -383,14 +396,17 @@ function generateIncidentPage(inc) {
         <div class="incident-gallery">
             <h3>Images</h3>
             <div class="gallery-grid">
-                ${details.images.map(img => `
+                ${details.images.map(img => {
+            const imgUrl = img.local_path ? `../../${img.local_path}` : img.url;
+            return `
                     <div class="gallery-item">
-                        <a href="${img.url}" target="_blank">
-                            <img src="${img.url}" alt="${img.caption || 'Incident Image'}">
+                        <a href="${imgUrl}" target="_blank">
+                            <img src="${imgUrl}" alt="${img.caption || 'Incident Image'}">
                         </a>
                         ${img.comment ? `<p class="img-caption">${img.comment}</p>` : ''}
                     </div>
-                `).join('')}
+                `;
+        }).join('')}
             </div>
         </div>`;
     }

@@ -620,7 +620,8 @@
         "date": "2019-01-07 11:15:00",
         "dist_km": "0.105",
         "elevation": 1595,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_8920.png?v=1"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_8920.png?v=1",
+        "local_path": "profile_images/snowprofile_8920.png"
       }
     ]
   },
@@ -732,14 +733,16 @@
         "date": "2019-12-16 10:45:00",
         "dist_km": "0.064",
         "elevation": 2120,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10973.png?v=2"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10973.png?v=2",
+        "local_path": "profile_images/snowprofile_10973.png"
       },
       {
         "id": 10974,
         "date": "2019-12-16 09:00:00",
         "dist_km": "0.094",
         "elevation": 2107,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10974.png?v=2"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_10974.png?v=2",
+        "local_path": "profile_images/snowprofile_10974.png"
       }
     ]
   },
@@ -859,28 +862,32 @@
         "date": "2020-12-11 08:45:00",
         "dist_km": "0.000",
         "elevation": 2081,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12878.png?v=1"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12878.png?v=1",
+        "local_path": "profile_images/snowprofile_12878.png"
       },
       {
         "id": 12787,
         "date": "2020-12-03 12:15:00",
         "dist_km": "0.201",
         "elevation": 2100,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12787.png?v=1"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12787.png?v=1",
+        "local_path": "profile_images/snowprofile_12787.png"
       },
       {
         "id": 12786,
         "date": "2020-12-03 13:30:00",
         "dist_km": "0.231",
         "elevation": 2030,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12786.png?v=1"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12786.png?v=1",
+        "local_path": "profile_images/snowprofile_12786.png"
       },
       {
         "id": 12791,
         "date": "2020-12-03 13:15:00",
         "dist_km": "0.270",
         "elevation": 2174,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12791.png?v=1"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_12791.png?v=1",
+        "local_path": "profile_images/snowprofile_12791.png"
       }
     ]
   },
@@ -1104,7 +1111,8 @@
         "date": "2023-02-07 11:30:00",
         "dist_km": "0.424",
         "elevation": 1860,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_18854.png?v=3"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_18854.png?v=3",
+        "local_path": "profile_images/snowprofile_18854.png"
       }
     ]
   },
@@ -1718,7 +1726,8 @@
         "date": "2024-01-09 11:50:00",
         "dist_km": "0.047",
         "elevation": 1960,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_20727.png?v=2"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_20727.png?v=2",
+        "local_path": "profile_images/snowprofile_20727.png"
       }
     ]
   },
@@ -2130,7 +2139,8 @@
         "date": "2024-12-16 09:15:00",
         "dist_km": "0.077",
         "elevation": 2000,
-        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_22380.png?v=2"
+        "url": "https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_22380.png?v=2",
+        "local_path": "profile_images/snowprofile_22380.png"
       }
     ]
   }

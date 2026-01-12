@@ -5,6 +5,39 @@ const path = require('path');
 const INCIDENTS_FILE = path.join(__dirname, '../data/incidents.json');
 const RECENT_PROFILES_FILE = path.join(__dirname, '../data/recent_profiles.json');
 const PROFILE_API_URL = 'https://lawis.at/lawis_api/v2_3/profile/';
+const IMAGES_DIR = path.join(__dirname, '../data/profile_images');
+
+if (!fs.existsSync(IMAGES_DIR)) fs.mkdirSync(IMAGES_DIR, { recursive: true });
+
+function downloadImage(url, profileId) {
+    return new Promise((resolve) => {
+        if (!url) return resolve(null);
+
+        // Extract filename
+        const filename = path.basename(url).split('?')[0];
+        const destDir = IMAGES_DIR; // Flat structure for profiles? or subfolders? Flat is fine for IDs.
+        // Actually incidents used ID folder. Profiles have unique IDs too.
+
+        const destPath = path.join(destDir, filename);
+
+        // Skip if exists
+        if (fs.existsSync(destPath)) return resolve(path.relative(path.join(__dirname, '..', 'data'), destPath));
+
+        https.get(url, (res) => {
+            if (res.statusCode === 200) {
+                const file = fs.createWriteStream(destPath);
+                res.pipe(file);
+                file.on('finish', () => {
+                    file.close();
+                    resolve(path.relative(path.join(__dirname, '..', 'data'), destPath));
+                });
+            } else {
+                resolve(null);
+            }
+        }).on('error', () => resolve(null));
+    });
+}
+
 
 // Configuration
 const MATCH_DIST_KM = 0.5; // 500m
@@ -107,14 +140,15 @@ function getDistance(lat1, lon1, lat2, lon2) {
     });
 
     // B. Incident Matching Logic
-    incidents.forEach(inc => {
+    // B. Incident Matching Logic
+    for (const inc of incidents) {
         const iDate = parseDate(inc.date);
 
         // Initialize or clear matches
         inc.linked_profiles = [];
 
-        profiles.forEach(p => {
-            if (!p.latitude || !p.longitude) return;
+        for (const p of profiles) {
+            if (!p.latitude || !p.longitude) continue;
 
             // 1. Time Check
             const pDate = parseDate(p.datum);
@@ -125,24 +159,33 @@ function getDistance(lat1, lon1, lat2, lon2) {
                 const dist = getDistance(inc.lat, inc.lon, p.latitude, p.longitude);
                 if (dist <= MATCH_DIST_KM) {
                     // Match!
+                    const imgUrl = `https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_${p.profil_id}.png?v=${p.revision || 1}`;
+                    let localPath = null;
+                    try {
+                        // We can await here now
+                        localPath = await downloadImage(imgUrl, p.profil_id);
+                        if (localPath) localPath = localPath.replace(/\\/g, '/');
+                    } catch (e) { console.error('Error downloading profile image', e); }
+
                     inc.linked_profiles.push({
                         id: p.profil_id,
                         date: p.datum,
                         dist_km: dist.toFixed(3),
                         elevation: p.seehoehe,
                         aspect: p.exposition, // or expo? need to verify field
-                        url: `https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_${p.profil_id}.png?v=${p.revision || 1}`
+                        url: imgUrl,
+                        local_path: localPath
                     });
                 }
             }
-        });
+        }
 
         if (inc.linked_profiles.length > 0) {
             mtachedCount++;
             // Sort by distance
             inc.linked_profiles.sort((a, b) => parseFloat(a.dist_km) - parseFloat(b.dist_km));
         }
-    });
+    }
 
     console.log(`Matched profiles to ${mtachedCount} incidents.`);
     console.log(`Found ${recentProfiles.length} recent profiles in region.`);

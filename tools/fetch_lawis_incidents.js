@@ -3,8 +3,40 @@ const fs = require('fs');
 const path = require('path');
 
 const OUTPUT_FILE = path.join(__dirname, '../data/incidents.json');
+const IMAGES_DIR = path.join(__dirname, '../data/incident_images');
 const LOCATIONS_URL = 'https://lawis.at/lawis_api/v2_3/location/';
 const INCIDENTS_URL = 'https://lawis.at/lawis_api/v2_3/incident/';
+
+if (!fs.existsSync(IMAGES_DIR)) fs.mkdirSync(IMAGES_DIR, { recursive: true });
+
+function downloadImage(url, incidentId) {
+    return new Promise((resolve) => {
+        if (!url) return resolve(null);
+
+        // Extract filename
+        const filename = path.basename(url).split('?')[0];
+        const destDir = path.join(IMAGES_DIR, incidentId.toString());
+        if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+        const destPath = path.join(destDir, filename);
+
+        // Skip if exists
+        if (fs.existsSync(destPath)) return resolve(path.relative(path.join(__dirname, '..', 'data'), destPath));
+
+        https.get(url, (res) => {
+            if (res.statusCode === 200) {
+                const file = fs.createWriteStream(destPath);
+                res.pipe(file);
+                file.on('finish', () => {
+                    file.close();
+                    resolve(path.relative(path.join(__dirname, '..', 'data'), destPath));
+                });
+            } else {
+                resolve(null);
+            }
+        }).on('error', () => resolve(null));
+    });
+}
 
 // Date Utils
 function getSeasonDates() {
@@ -184,6 +216,18 @@ function fetchJson(url) {
                     parsedImages = await probeImages(simpleInc.id);
                 } else {
                     // console.log(`  Found ${parsedImages.length} images from API for ${simpleInc.id}.`);
+                }
+
+                // DOWNLOAD IMAGES
+                for (const img of parsedImages) {
+                    try {
+                        const localRelPath = await downloadImage(img.url, simpleInc.id);
+                        if (localRelPath) {
+                            img.local_path = localRelPath.replace(/\\/g, '/'); // Normalize for JSON
+                        }
+                    } catch (e) {
+                        console.error(`Failed to download image ${img.url}`, e);
+                    }
                 }
 
                 // 3. Translate Comments

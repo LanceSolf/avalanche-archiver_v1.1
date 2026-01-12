@@ -15,6 +15,21 @@
     "revision": 1
   },
   {
+    "profil_id": 24408,
+    "datum": "2026-01-11 16:00:00",
+    "country_id": 1,
+    "region_id": 1,
+    "subregion_id": 158,
+    "ort": "Nesslwängle-Krinnenalplift",
+    "seehoehe": 1604,
+    "latitude": 47.4798,
+    "longitude": 10.59044,
+    "hangneigung": 35,
+    "exposition_id": 8,
+    "loggedon": "2026-01-12 08:05:53",
+    "revision": 1
+  },
+  {
     "profil_id": 24404,
     "datum": "2026-01-11 14:50:00",
     "country_id": 1,
