@@ -90,7 +90,7 @@ const REGION_CONFIG = {
 <body>
     <div class="container">
         <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
-        <div style="margin-bottom:1rem;"><a href="javascript:history.back()">&larr; Back</a></div>
+        <div style="margin-bottom:1rem;"><a href="index.html">&larr; Back</a></div>
         <h1>Mountain Weather Report</h1>
         <p style="color:#666; margin-bottom:2rem;">Issued: ${w.issued}</p>
         
@@ -869,7 +869,7 @@ function generateIncidentWeatherPage(inc, station, data, report, dist, historicW
 <body>
     <div class="container">
         <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
-        <div style="margin-bottom:1rem;"><a href="javascript:history.back()">&larr; Back to Incident</a></div>
+        <div style="margin-bottom:1rem;"><a href="index.html">&larr; Back to Incidents</a></div>
         
         <h1>Weather Context</h1>
         <h2 style="color: #666;">${inc.location} - ${inc.date}</h2>
