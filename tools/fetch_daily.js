@@ -40,10 +40,15 @@ const SOURCES = [
     }
 ];
 
+// Helper for Cache Directory
+const CACHE_DIR = path.join(dataDir, 'bulletin_cache');
+if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+
 // Helper to fetch and process a single source
 async function fetchAndProcess(source, dateStr) {
     const url = source.url(dateStr);
     const dest = path.join(dataDir, `${source.name}_${dateStr}.json`);
+    const cacheFile = path.join(CACHE_DIR, `${source.name}_${dateStr}.json`);
 
     console.log(`\nFetching ${source.name}: ${url}`);
 
@@ -54,25 +59,46 @@ async function fetchAndProcess(source, dateStr) {
                 response.pipe(file);
                 file.on('finish', () => {
                     file.close(async () => {
-                        console.log(`  Saved to ${dest}`);
+                        console.log(`  Saved temp to ${dest}`);
                         try {
-                            const content = JSON.parse(fs.readFileSync(dest, 'utf-8'));
-                            const bulletins = Array.isArray(content) ? content : content.bulletins;
-                            if (bulletins) {
-                                for (const bulletin of bulletins) {
-                                    await processBulletinForPdfs(bulletin, dateStr, source.type);
-                                }
-                                // Cleanup JSON file
-                                try {
-                                    fs.unlinkSync(dest);
-                                    console.log(`  Cleaned up ${dest}`);
-                                } catch (cleanupErr) {
-                                    console.error(`  Failed to delete JSON: ${cleanupErr.message}`);
+                            const contentStr = fs.readFileSync(dest, 'utf-8');
+                            // const content = JSON.parse(contentStr); // Validate JSON
+
+                            // Check Cache
+                            let isNew = true;
+                            if (fs.existsSync(cacheFile)) {
+                                const cacheStr = fs.readFileSync(cacheFile, 'utf-8');
+                                if (contentStr === cacheStr) {
+                                    console.log(`  JSON matches cached version. No changes for ${source.name}. Skipping PDF checks.`);
+                                    isNew = false;
                                 }
                             }
+
+                            if (isNew) {
+                                // Process PDFs
+                                const content = JSON.parse(contentStr);
+                                const bulletins = Array.isArray(content) ? content : content.bulletins;
+                                if (bulletins) {
+                                    for (const bulletin of bulletins) {
+                                        await processBulletinForPdfs(bulletin, dateStr, source.type);
+                                    }
+                                }
+                                // Update Cache
+                                fs.copyFileSync(dest, cacheFile);
+                                console.log(`  Updated cache: ${cacheFile}`);
+                            }
+
+                            // Cleanup JSON file
+                            try {
+                                fs.unlinkSync(dest);
+                                // console.log(`  Cleaned up ${dest}`);
+                            } catch (cleanupErr) {
+                                console.error(`  Failed to delete JSON: ${cleanupErr.message}`);
+                            }
+
                             resolve(true);
                         } catch (e) {
-                            console.error(`  Error processing ${source.name} PDFs:`, e.message);
+                            console.error(`  Error processing ${source.name} JSON/PDFs:`, e.message);
                             resolve(false);
                         }
                     });
@@ -92,6 +118,7 @@ async function fetchAndProcess(source, dateStr) {
         });
     });
 }
+
 
 (async () => {
     const dates = [targetDate];

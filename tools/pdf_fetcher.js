@@ -117,6 +117,16 @@ async function processBulletinForPdfs(bulletin, dateStr, sourceType = 'lawinen-w
                 // Removed strict buffer comparison to avoid duplicates for identical-size downloads.
 
                 if (isDifferent) {
+                    // Double check with buffer comparison to be sure (avoid size-only false positives)
+                    const bufBase = fs.readFileSync(baseDest);
+                    const bufNewBase = fs.readFileSync(tempDest);
+                    if (bufBase.equals(bufNewBase)) {
+                        console.log(`  Update matches existing ${dateStr}.pdf (content check). Skipping.`);
+                        isDifferent = false;
+                    }
+                }
+
+                if (isDifferent) {
                     console.log(`  Update detected for ${slug}/${dateStr}.pdf!`);
 
                     // Find next version suffix

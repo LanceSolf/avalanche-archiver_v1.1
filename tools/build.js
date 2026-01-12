@@ -59,6 +59,47 @@ const REGION_CONFIG = {
 
 // --- MAIN EXECUTION ---
 (async () => {
+    // 0. Load Weather Archive
+    const WEATHER_FILE = path.join(dataDir, 'weather_archive.json');
+    let weatherMap = {};
+    if (fs.existsSync(WEATHER_FILE)) {
+        const weatherData = JSON.parse(fs.readFileSync(WEATHER_FILE, 'utf8'));
+        const weatherOutputDir = path.join(archiveDir, 'weather');
+        if (!fs.existsSync(weatherOutputDir)) fs.mkdirSync(weatherOutputDir, { recursive: true });
+
+        weatherData.forEach(w => {
+            weatherMap[w.date] = w;
+            // Generate Weather Page
+            const weatherHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountain Weather - ${w.date}</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .weather-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: var(--shadow-sm); line-height: 1.6; }
+        .weather-content h2 { margin-top: 0; color: var(--primary-blue); border-bottom: 2px solid var(--accent-red); padding-bottom: 0.5rem; display:inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
+        <div style="margin-bottom:1rem;"><a href="javascript:history.back()">&larr; Back</a></div>
+        <h1>Mountain Weather Report</h1>
+        <p style="color:#666; margin-bottom:2rem;">Issued: ${w.issued}</p>
+        
+        <div class="weather-content">
+            ${w.html_content}
+        </div>
+    </div>
+</body>
+</html>`;
+            fs.writeFileSync(path.join(weatherOutputDir, `${w.date}.html`), weatherHtml);
+        });
+        console.log(`Loaded ${Object.keys(weatherMap).length} weather reports.`);
+    }
+
     // 1. Gather Data
     const allData = {}; // structure: { regionId: { month: { date: payload } } } (payload is {type: 'pdf', src: string})
 
@@ -142,10 +183,19 @@ const REGION_CONFIG = {
                 `${config.label} - ${getMonthName(month)}`,
                 `../../../`,
                 sortedDates.map(d => {
-                    return {
+                    const item = {
                         text: d, // The date string (e.g. 2025-01-01)
                         href: `${d}.pdf`
                     };
+
+                    // Add Weather Link for specific regions
+                    if ((config.slug === 'allgau-prealps' || config.slug === 'allgau-alps-central') && weatherMap[d]) {
+                        item.extraLink = {
+                            text: 'Mountain Weather',
+                            href: `../../weather/${d}.html` // Adjust path relative to region/month/index.html
+                        };
+                    }
+                    return item;
                 }),
                 false,
                 `../index.html`
@@ -304,7 +354,12 @@ function generateIndexPage(title, relativeRoot, items, isMain = false, backLink 
 
         <h1>${title}</h1>
         <div class="archive-list">
-            ${items.map(item => `<a href="${item.href}" class="archive-item ${item.className || ''}">${item.text}</a>`).join('')}
+            ${items.map(item => `
+                <a href="${item.href}" class="archive-item ${item.className || ''}" style="display:flex; flex-direction:column; align-items:flex-start;">
+                    <span>${item.text}</span>
+                    ${item.extraLink ? `<object><a href="${item.extraLink.href}" style="font-size:0.85rem; color:#0284c7; margin-top:0.25rem; text-decoration:underline; z-index:2;">${item.extraLink.text}</a></object>` : ''}
+                </a>
+            `).join('')}
         </div>
         ${!isMain ? `<div style="margin-top:2rem"><a href="${backLink}">&larr; Back</a></div>` : ''}
     </div>
