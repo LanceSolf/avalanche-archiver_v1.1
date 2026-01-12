@@ -16,12 +16,19 @@
         .data-label { font-size: 0.75rem; text-transform:uppercase; color: var(--text-secondary); }
         .data-value { font-weight: 600; }
         .source-link { color: var(--accent-red); font-weight: bold; }
+        .map-container { width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 2rem; }
     </style>
 </head>
 <body>
     <div class="container">
         <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
-        <h1>Latest Snow Profiles (7 Days)</h1>
+        
+        <h1>Latest Snow Profiles (Last 48 Hours)</h1>
+
+        <div class="map-container">
+             <iframe src="map.html" width="100%" height="100%" style="border:none;"></iframe>
+        </div>
+        
         <div class="profile-list">
             
         <div class="station-card">
@@ -34,7 +41,7 @@
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">36°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24406.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="24406.html" class="source-link">View Detail &rarr;</a>
         </div>
     
         <div class="station-card">
@@ -47,7 +54,7 @@
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">35°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24408.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="24408.html" class="source-link">View Detail &rarr;</a>
         </div>
     
         <div class="station-card">
@@ -60,98 +67,7 @@
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">3°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24404.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 13:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">1744 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">21°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24394.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 13:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2080 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">29°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24402.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 12:45:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2451 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24397.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 12:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2300 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24398.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 11:15:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2136 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">25°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24396.png?v=3" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 10:50:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2411 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">35°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24393.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 10:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2150 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24392.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="24404.html" class="source-link">View Detail &rarr;</a>
         </div>
     
         <div class="station-card">
@@ -164,7 +80,7 @@
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">34°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24401.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="24401.html" class="source-link">View Detail &rarr;</a>
         </div>
     
         <div class="station-card">
@@ -177,410 +93,7 @@
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">34°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24403.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-11 09:55:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2081 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">26°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24391.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-10 15:10:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">1870 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">31°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24389.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-10 13:50:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2609 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">27°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24388.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-10 12:50:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2130 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">28°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24387.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-10 10:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2750 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">40°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24390.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-09 14:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2131 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">37°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24382.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-09 13:05:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2176 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">35°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24381.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 15:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2501 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">34°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24361.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 15:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2700 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24362.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 14:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2600 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24364.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 13:40:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2600 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24359.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 13:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2775 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">45°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24357.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 13:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2595 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">40°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24366.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 11:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2110 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">-°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24348.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 10:50:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2441 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">25°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24367.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 10:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2450 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24358.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 09:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2430 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">20°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24360.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 09:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2447 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">25°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24365.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-08 09:15:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">1697 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">3°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24356.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 15:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2752 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">26°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24363.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 15:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2700 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">37°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24368.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 14:20:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2115 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24337.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 13:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2140 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">33°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24336.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 13:00:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2970 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24344.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 12:50:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2130 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">35°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24335.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 11:40:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2720 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">23°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24334.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 11:20:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2720 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">33°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24332.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-07 09:40:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2720 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">28°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24331.png?v=2" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-06 13:30:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2300 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">35°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24325.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-05 13:15:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2300 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">30°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24354.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
-        </div>
-    
-        <div class="station-card">
-            <div class="station-header">
-                <h2 class="station-name">Snow Profile</h2>
-                <span class="latest-update">2026-01-05 12:44:00</span>
-            </div>
-            <div class="data-grid">
-               <div class="data-item"><span class="data-label">Elev</span><span class="data-value">2377 m</span></div>
-               <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">-</span></div>
-               <div class="data-item"><span class="data-label">Slope</span><span class="data-value">26°</span></div>
-            </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_24320.png?v=1" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="24403.html" class="source-link">View Detail &rarr;</a>
         </div>
     
         </div>

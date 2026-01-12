@@ -213,6 +213,21 @@ const REGION_CONFIG = {
             const profilesDir = path.join(archiveDir, 'profiles');
             if (!fs.existsSync(profilesDir)) fs.mkdirSync(profilesDir, { recursive: true });
 
+            // Generate Individual Profile Pages
+            recentProfiles.forEach(p => {
+                const pHtml = generateProfileDetailPage(p);
+                fs.writeFileSync(path.join(profilesDir, `${p.profil_id}.html`), pHtml);
+            });
+
+            // Run Map Generator (Python)
+            try {
+                const { execSync } = require('child_process');
+                console.log('Generating Map...');
+                execSync('python tools/generate_map.py', { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
+            } catch (err) {
+                console.error('Failed to generate map:', err.message);
+            }
+
             const profilesHtml = generateProfilesPage(recentProfiles);
             fs.writeFileSync(path.join(profilesDir, 'index.html'), profilesHtml);
         } catch (e) {
@@ -310,7 +325,7 @@ function generateProfilesPage(profiles) {
                <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">${translateAspect(p.exposition)}</span></div>
                <div class="data-item"><span class="data-label">Slope</span><span class="data-value">${p.hangneigung || '-'}°</span></div>
             </div>
-            <a href="https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_${p.profil_id}.png?v=${p.revision || 1}" target="_blank" class="source-link">View Profile &rarr;</a>
+            <a href="${p.profil_id}.html" class="source-link">View Detail &rarr;</a>
         </div>
     `).join('');
 
@@ -332,12 +347,19 @@ function generateProfilesPage(profiles) {
         .data-label { font-size: 0.75rem; text-transform:uppercase; color: var(--text-secondary); }
         .data-value { font-weight: 600; }
         .source-link { color: var(--accent-red); font-weight: bold; }
+        .map-container { width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 2rem; }
     </style>
 </head>
 <body>
     <div class="container">
         <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a></div></header>
-        <h1>Latest Snow Profiles (7 Days)</h1>
+        
+        <h1>Latest Snow Profiles (Last 48 Hours)</h1>
+
+        <div class="map-container">
+             <iframe src="map.html" width="100%" height="100%" style="border:none;"></iframe>
+        </div>
+        
         <div class="profile-list">
             ${profileItems}
         </div>
@@ -520,4 +542,47 @@ function translateAspect(id) {
     const map = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     if (typeof id === 'number' && id >= 1 && id <= 8) return map[id - 1];
     return id;
+}
+
+function generateProfileDetailPage(p) {
+    const title = `Snow Profile: ${p.ort}`;
+    const date = p.datum;
+    const imageUrl = `https://lawis.at/lawis_api/v2_3/files/profiles/snowprofile_${p.profil_id}.png`;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                 <a href="../../index.html" class="logo">Avalanche Archive</a>
+            </div>
+            <nav>
+                <a href="map.html" style="font-weight:bold;">View Map</a>
+            </nav>
+        </header>
+        
+        <h1>${title}</h1>
+        <div class="meta-item"><strong>Date:</strong> ${date}</div>
+        <div class="meta-item"><strong>Elevation:</strong> ${p.seehoehe}m</div>
+        <div class="meta-item"><strong>Location:</strong> ${p.latitude}, ${p.longitude}</div>
+        
+        <div style="margin-top:20px; text-align:center;">
+            <img src="${imageUrl}" style="max-width:100%; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+        </div>
+
+        <div style="margin-top:2rem; text-align:center;">
+            <a href="https://lawis.at/profile/${p.profil_id}" target="_blank">Original on Lawis.at</a>
+        </div>
+        
+        <div style="margin-top:2rem"><a href="map.html">&larr; Back to Map</a> | <a href="index.html">List View</a></div>
+    </div>
+</body>
+</html>`;
 }

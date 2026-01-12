@@ -42,7 +42,7 @@ function downloadImage(url, profileId) {
 // Configuration
 const MATCH_DIST_KM = 0.5; // 500m
 const MATCH_TIME_DAYS = 7;
-const RECENT_WINDOW_DAYS = 7;
+const RECENT_WINDOW_DAYS = 2;
 
 // Helper to fetch JSON
 function fetchJson(url) {
@@ -106,16 +106,14 @@ function getDistance(lat1, lon1, lat2, lon2) {
     // Simple Bounding Box/Region Check for "Recent" list (Allgau + Bayern)
     // Approximate box for Bavarian Alps + Allgau:
     // Lat: 47.2 - 47.8, Lon: 9.9 - 13.5
+    // Center: Oberstdorf (47.4099, 10.2797) - Radius: 25km
     function isRelevantRegion(p) {
-        // ID check if we knew IDs. 
-        // 82 = Vorarlberg/Allgau?
-        // Let's use Lat/Lon filter for simplicity and robustness
         const lat = p.latitude;
         const lon = p.longitude;
         if (!lat || !lon) return false;
 
-        // Broad box for Northern Alps (Allgau, Tyrol, Bavaria)
-        return (lat >= 47.0 && lat <= 48.0 && lon >= 9.5 && lon <= 13.5);
+        const dist = getDistance(47.4099, 10.2797, lat, lon);
+        return dist <= 25;
     }
 
     const now = new Date();
