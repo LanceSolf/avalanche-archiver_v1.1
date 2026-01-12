@@ -647,7 +647,7 @@ function generateProfileDetailPage(p) {
         <h1>${title}</h1>
         <div class="meta-item"><strong>Date:</strong> ${date}</div>
         <div class="meta-item"><strong>Elevation:</strong> ${p.seehoehe}m</div>
-        <div class="meta-item"><strong>Location:</strong> ${p.latitude}, ${p.longitude}</div>
+        <div class="meta-item"><strong>Location:</strong> <a href="map.html?lat=${p.latitude}&lon=${p.longitude}" style="color:#0284c7; text-decoration:underline;">${p.latitude}, ${p.longitude}</a></div>
         
         <div style="margin-top:20px; text-align:center;">
             <img src="${imageUrl}" style="max-width:100%; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
