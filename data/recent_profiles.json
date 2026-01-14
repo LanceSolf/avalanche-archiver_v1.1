@@ -43,20 +43,5 @@
         }
       }
     ]
-  },
-  {
-    "profil_id": 24410,
-    "datum": "2026-01-12 10:45:00",
-    "country_id": 1,
-    "region_id": 2,
-    "subregion_id": 82,
-    "ort": "Riezlern",
-    "seehoehe": 1800,
-    "latitude": 47.35351,
-    "longitude": 10.11609,
-    "hangneigung": 35,
-    "exposition_id": 1,
-    "loggedon": "2026-01-12 13:49:17",
-    "revision": 2
   }
 ]
