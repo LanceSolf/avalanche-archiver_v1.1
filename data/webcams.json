@@ -1,72 +1,613 @@
 [
     {
-        "title": "Kanzelwand / Fellhorn",
-        "location": "Fellhorn",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=12206&2&format=44",
-        "lat": 47.35,
-        "lon": 10.25
+        "title": "Weiherkopf Bergstation (1,670 m) – Bolsterlang I",
+        "location": "Bolsterlang I",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcf986/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_986.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
     },
     {
-        "title": "Nebelhorn",
-        "location": "Nebelhorn-Oberstdorf",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=4971&2&format=44",
-        "lat": 47.40,
-        "lon": 10.35
+        "title": "Kanzelwand/Fellhorn (1,970 m) – Riezlern / Kleinwalsertal",
+        "location": "Riezlern / Kleinwalsertal",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf306/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_306.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
     },
     {
-        "title": "Schloss Hohenschwangau",
-        "location": "Hohenschwangau",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=14246&2&format=44",
-        "lat": 47.55,
-        "lon": 10.74
+        "title": "Fellhorn/Oberstdorf Kleinwalsertal (1,967 m) – Oberstdorf",
+        "location": "Oberstdorf",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf303/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_303.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
     },
     {
-        "title": "Mittaggipfel",
-        "location": "Immenstadt",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=12246&2&format=12",
-        "lat": 47.55,
-        "lon": 10.18
+        "title": "Möserbahn Berg (1,905 m) – Oberstdorf",
+        "location": "Oberstdorf",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf617/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_617.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Nebelhorn (2,224 m) – Oberstdorf",
+        "location": "Oberstdorf",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf304/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_304.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Oberstdorf Schanze (876 m) – Oberstdorf",
+        "location": "Oberstdorf",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf305/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_305.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Bad Hindelang/Oberjoch (1,380 m) – Bad Hindelang",
+        "location": "Bad Hindelang",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcf291/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_291.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Oberstaufen (1,032 m) – Oberstaufen",
+        "location": "Oberstaufen",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf301/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_301.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Fluhexpress Berg (1,370 m) – Oberstaufen",
+        "location": "Oberstaufen",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf859/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_859.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Tegelberg (1,730 m) – Schwangau",
+        "location": "Schwangau",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf308/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_308.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Tegelberg Talstation (860 m) – Schwangau",
+        "location": "Schwangau",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf309/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_309.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Schloss Hohenschwangau (880 m) – Schwangau",
+        "location": "Schwangau",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf785/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_785.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Festspielhaus Neuschwanstein (795 m) – Füssen",
+        "location": "Füssen",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf790/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_790.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Hotel Hirsch (820 m) – Füssen",
+        "location": "Füssen",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf972/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_972.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Grünten Gipfel (1,738 m) – Burgberg im Allgäu",
+        "location": "Burgberg im Allgäu",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/gruentenlifte-kranzegg-rettenberg/webcams/wcf992/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_992.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Hochgratbahn Bergstation (1,708 m) – Oberstaufen",
+        "location": "Oberstaufen",
+        "type": "live",
+        "linkUrl": "https://www.skiresort.info/ski-resort/hochgrat-oberstaufen/webcams/wcf302/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_302.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Feratel"
+    },
+    {
+        "title": "Ofterschwang - Allgäuer Berghof (1,180 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://allgaeuer-berghof.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4422.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Blaichach - Gunzesried (924 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://blaichach.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3543628.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Ofterschwang Bergbahnen",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://bog.roundshot.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_5f874889412553ab64370fb2d2ab4f23.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
+    },
+    {
+        "title": "Kleinwalsertal - Kanzelwandbahn (1,923 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ok-bergbahnen.panomax.com/kanzelwand",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052880.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Oberstdorf - Nebelhorn (2,058 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ok-bergbahnen.panomax.com/nebelhorn",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052884.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Oberstdorf - Söllereck Berghaus Schönblick (1,350 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ok-bergbahnen.panomax.com/soellereck-berg",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1607.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Oberstdorf - Söllereckbahn Tal (1,305 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ok-bergbahnen.panomax.com/soellereck-ochsenhoefle",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1867.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Oberstdorf - Söllereck Schrattenwang (1,400 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ok-bergbahnen.panomax.com/soellereck-schrattenwang",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3192.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Nesselwang - Alpspitzbahn Mittelstation (1,180 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://nesselwang.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1499.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Nesselwang - Alpspitzbahn Sportheim Böck (1,455 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://sportheim-boeck.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2423.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Nesselwang - Alpspitzbahn Talstation (910 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://alpspitzbahn.panomax.com/talstation",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2820.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Balderschwang Gelbhansekopf",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://balderschwang.roundshot.com/gelbhansekopf/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_a14513b05cfaf9442521aac2f759b144.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
     },
     {
         "title": "Balderschwang",
-        "location": "Balderschwang",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=14587&2&format=12",
-        "lat": 47.46,
-        "lon": 10.10
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://balderschwang.roundshot.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_d77e38fa98328da587cc0d8ec807e746.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
     },
     {
-        "title": "Söllereck / Oberstdorf",
+        "title": "Grasgehren - Bolgengrat",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://grasgehren.roundshot.com/bolgengrat/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_6bd381d9cc2f284fd1fcc1a7bba1c42b.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
+    },
+    {
+        "title": "Oberstaufen - Rosenalp (810 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://rosenalp.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3711.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Schwangau - Tegelbergbahn (1,706 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://tegelberg.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1732641.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Schwangau - Schlossbrauhaus (800 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://schwangau.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4530.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Pfronten - Boutique Hotel Blaue Burg Falkenstein (1,230 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://hotel-blaue-burg-falkenstein.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced231.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Pfronten - Skizentrum (990 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://pfronten.panomax.com/skizentrum",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3708.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Breitenbergbahn - Pfronten (1,680 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://pfronten.panomax.com/breitenbergbahn",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3705.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Pfronten - Ostlerhütte (1,838 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://ostlerhuette.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1682.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Eisenberg - Burgruine (1,024 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://eisenberg.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced770.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Mittagbahn",
+        "location": "Immenstadt",
+        "type": "live",
+        "linkUrl": "https://mittagbahn.roundshot.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_79f064a1dfe0a869e4f49e098833fb72.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot",
+        "lat": 47.545,
+        "lon": 10.187
+    },
+    {
+        "title": "Rettenberg - Grünten (1,460 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://gruenten.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1418.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Sonthofen - Panzer & Braun Tiefbau (735 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://panzer-braun.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1832.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Buching - Buchenbergbahn (1,129 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://buchenberg.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1737231.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Halblech im Allgäu (850 m)",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://halblech.panomax.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3392.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Panomax"
+    },
+    {
+        "title": "Fellhornbahn summit station",
+        "location": "Allgäu",
+        "type": "static",
+        "linkUrl": "https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcn42691/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42691.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Skiresort.info"
+    },
+    {
+        "title": "Nebelhornbahn/Seealpe",
+        "location": "Allgäu",
+        "type": "static",
+        "linkUrl": "https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcn42721/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42721.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Skiresort.info"
+    },
+    {
+        "title": "Mountain station Weltcup-Express/Weltcuphütte",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://bog.roundshot.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67197.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
+    },
+    {
+        "title": "Hörnerbahn mid-station",
+        "location": "Allgäu",
+        "type": "static",
+        "linkUrl": "https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcn66617/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_66617.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Skiresort.info"
+    },
+    {
+        "title": "Summit Ofterschwanger Horn",
+        "location": "Allgäu",
+        "type": "live",
+        "linkUrl": "https://bog.roundshot.com/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67198.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Roundshot"
+    },
+    {
+        "title": "Iselertal/Iseler",
+        "location": "Allgäu",
+        "type": "static",
+        "linkUrl": "https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcn70042/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_70042.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Skiresort.info"
+    },
+    {
+        "title": "Breitenbergbahn mountain station (1,501 m)",
+        "location": "Allgäu",
+        "type": "static",
+        "linkUrl": "https://www.skiresort.info/ski-resort/breitenberg-hochalpe-pfronten/webcams/wcn57883/",
+        "imageUrl": "https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_57883.jpg",
+        "updateInterval": "Unknown",
+        "provider": "Skiresort.info"
+    },
+    {
+        "title": "Nebelhorn Gipfel (2224m)",
         "location": "Oberstdorf",
+        "type": "live",
+        "lat": 47.424,
+        "lon": 10.354,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=4971&2&format=12",
+        "linkUrl": "https://www.ok-bergbahnen.com/service/webcams/nebelhorn/"
+    },
+    {
+        "title": "Fellhorn Mittelstation (1780m)",
+        "location": "Oberstdorf",
+        "type": "live",
+        "lat": 47.352,
+        "lon": 10.247,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=12206&2&format=12",
+        "linkUrl": "https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/"
+    },
+    {
+        "title": "Söllereck (1358m)",
+        "location": "Oberstdorf",
+        "type": "live",
+        "lat": 47.382,
+        "lon": 10.251,
         "imageUrl": "https://images.bergfex.at/webcams/?id=10858&2&format=12",
-        "lat": 47.38,
-        "lon": 10.25
+        "linkUrl": "https://soellereck.panomax.com/"
     },
     {
-        "title": "Skizentrum Steinach / Pfronten",
+        "title": "Walmendingerhorn (1990m)",
+        "location": "Kleinwalsertal",
+        "type": "live",
+        "lat": 47.327,
+        "lon": 10.134,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3240&2&format=12",
+        "linkUrl": "https://www.ok-bergbahnen.com/service/webcams/walmendingerhorn/"
+    },
+    {
+        "title": "Ifen (2030m)",
+        "location": "Kleinwalsertal",
+        "type": "live",
+        "lat": 47.358,
+        "lon": 10.106,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=288&2&format=12",
+        "linkUrl": "https://www.ok-bergbahnen.com/service/webcams/ifen/"
+    },
+    {
+        "title": "Kanzelwand Berg (1957m)",
+        "location": "Kleinwalsertal",
+        "type": "live",
+        "lat": 47.33,
+        "lon": 10.18,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3238&2&format=12",
+        "linkUrl": "https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/"
+    },
+    {
+        "title": "Oberstdorf Marktplatz",
+        "location": "Oberstdorf",
+        "type": "live",
+        "lat": 47.408,
+        "lon": 10.278,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=1658&2&format=12",
+        "linkUrl": "https://www.oberstdorf.de/webcams/"
+    },
+    {
+        "title": "Breitenberg (1730m)",
         "location": "Pfronten",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=5540&2&format=44",
-        "lat": 47.58,
-        "lon": 10.56
+        "type": "static",
+        "updateInterval": "10 min",
+        "lat": 47.551,
+        "lon": 10.575,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=5577&2&format=12",
+        "linkUrl": "https://www.breitenbergbahn.de/service/webcams.html"
     },
     {
-        "title": "Breitenberg Bergstation",
-        "location": "Pfronten",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=5577&2&format=44",
-        "lat": 47.55,
-        "lon": 10.57
-    },
-    {
-        "title": "Talstation (Tegelberg)",
+        "title": "Tegelberg (1720m)",
         "location": "Schwangau",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=1448&2&format=44",
-        "lat": 47.57,
-        "lon": 10.75
+        "type": "static",
+        "updateInterval": "10 min",
+        "lat": 47.567,
+        "lon": 10.767,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=1449&2&format=12",
+        "linkUrl": "https://www.tegelbergbahn.de/"
     },
     {
-        "title": "Tegelbergbahn Bergstation",
-        "location": "Schwangau",
-        "imageUrl": "https://images.bergfex.at/webcams/?id=1449&2&format=44",
-        "lat": 47.56,
-        "lon": 10.76
+        "title": "Neunerköpfle (1792m)",
+        "location": "Tannheimer Tal",
+        "type": "live",
+        "lat": 47.485,
+        "lon": 10.534,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=4492&2&format=12",
+        "linkUrl": "https://www.tannheimertal.com/webcams/"
+    },
+    {
+        "title": "Füssener Jöchle (1818m)",
+        "location": "Tannheim / Grän",
+        "type": "live",
+        "lat": 47.502,
+        "lon": 10.57,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=6121&2&format=12",
+        "linkUrl": "https://www.tannheimertal.com/webcams/"
+    },
+    {
+        "title": "Hörnerbahn Bolsterlang",
+        "location": "Bolsterlang",
+        "type": "static",
+        "updateInterval": "Hourly",
+        "lat": 47.465,
+        "lon": 10.218,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3242&2&format=12",
+        "linkUrl": "https://www.hoernerbahn.de/webcams/"
+    },
+    {
+        "title": "Ofterschwang (Gunzesrieder Tal)",
+        "location": "Ofterschwang",
+        "type": "static",
+        "updateInterval": "10 min",
+        "lat": 47.505,
+        "lon": 10.23,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=2888&2&format=12",
+        "linkUrl": "https://www.go-ofterschwang.de/"
+    },
+    {
+        "title": "Riedbergerhorn / Grasgehren",
+        "location": "Obermaiselstein",
+        "type": "live",
+        "lat": 47.442,
+        "lon": 10.177,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=2621&2&format=12",
+        "linkUrl": "https://www.grasgehren.de/webcam/"
+    },
+    {
+        "title": "Alpsee / Bärenfalle",
+        "location": "Immenstadt",
+        "type": "live",
+        "lat": 47.558,
+        "lon": 10.15,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3324&2&format=12",
+        "linkUrl": "https://www.alpsee-bergwelt.de/"
+    },
+    {
+        "title": "Grünten (1738m)",
+        "location": "Rettenberg",
+        "type": "static",
+        "updateInterval": "Hourly",
+        "lat": 47.554,
+        "lon": 10.316,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=16720&2&format=12",
+        "linkUrl": "https://www.bergfex.de/gruenten/webcams/"
+    },
+    {
+        "title": "Hochgrat (1834m)",
+        "location": "Oberstaufen",
+        "type": "static",
+        "updateInterval": "15 min",
+        "lat": 47.495,
+        "lon": 10.076,
+        "imageUrl": "https://images.bergfex.at/webcams/?id=1798&2&format=12",
+        "linkUrl": "https://www.hochgrat.de/webcams/"
     }
 ]

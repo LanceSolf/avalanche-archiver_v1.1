@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        .tagline-container { text-align: center; margin-bottom: 3rem; padding: 2rem; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd; }
-        .tagline-main { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; font-size: 1.5rem; color: #0369a1; margin-bottom: 0.5rem; }
-        .tagline-sub { font-size: 0.9rem; color: #0c4a6e; opacity: 0.8; }
-        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        /* Updated Tagline Style: White background, standard font, no border */
+        .tagline-container { text-align: center; margin-bottom: 3rem; padding: 2rem 1rem; background: white; }
+        .tagline-main { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 1.75rem; color: #0f172a; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .tagline-sub { font-size: 1rem; color: #64748b; font-weight: 400; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+        
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
         .action-card { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: inherit; transition: transform 0.2s; border: 2px solid transparent; }
         .action-card:hover { transform: translateY(-4px); border-color: #0284c7; }
         .action-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
@@ -29,14 +31,14 @@
 
         <div class="tagline-container">
             <h2 class="tagline-main">If you find good snow let your fellow skiers know! ❄️</h2>
-            <div class="tagline-sub">and if it's not good definately share it so we can mark and avoid! 🏔️</div>
+            <div class="tagline-sub">...and if it's not good, definitely share it so we can mark and avoid! 🏔️</div>
         </div>
 
         <div class="action-grid">
             <a href="../webcams/index.html" class="action-card">
                 <span class="action-icon">📹</span>
                 <span class="action-title">Allgäu Webcams</span>
-                <span style="display:block; margin-top:0.5rem; color:#64748b;">10 Live Views</span>
+                <span style="display:block; margin-top:0.5rem; color:#64748b;">67 Live Views & Cams</span>
             </a>
             <a href="upload.html" class="action-card" style="background:#fefce8; border-color:#fef08a;">
                 <span class="action-icon">⛷️</span>

@@ -447,10 +447,12 @@ function generateGroundConditionsPage(data) {
     <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        .tagline-container { text-align: center; margin-bottom: 3rem; padding: 2rem; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd; }
-        .tagline-main { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; font-size: 1.5rem; color: #0369a1; margin-bottom: 0.5rem; }
-        .tagline-sub { font-size: 0.9rem; color: #0c4a6e; opacity: 0.8; }
-        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        /* Updated Tagline Style: White background, standard font, no border */
+        .tagline-container { text-align: center; margin-bottom: 3rem; padding: 2rem 1rem; background: white; }
+        .tagline-main { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 1.75rem; color: #0f172a; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .tagline-sub { font-size: 1rem; color: #64748b; font-weight: 400; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+        
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
         .action-card { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: inherit; transition: transform 0.2s; border: 2px solid transparent; }
         .action-card:hover { transform: translateY(-4px); border-color: #0284c7; }
         .action-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
@@ -469,14 +471,14 @@ function generateGroundConditionsPage(data) {
 
         <div class="tagline-container">
             <h2 class="tagline-main">If you find good snow let your fellow skiers know! ❄️</h2>
-            <div class="tagline-sub">and if it's not good definately share it so we can mark and avoid! 🏔️</div>
+            <div class="tagline-sub">...and if it's not good, definitely share it so we can mark and avoid! 🏔️</div>
         </div>
 
         <div class="action-grid">
             <a href="../webcams/index.html" class="action-card">
                 <span class="action-icon">📹</span>
                 <span class="action-title">Allgäu Webcams</span>
-                <span style="display:block; margin-top:0.5rem; color:#64748b;">${webcamCount} Live Views</span>
+                <span style="display:block; margin-top:0.5rem; color:#64748b;">${webcamCount} Live Views & Cams</span>
             </a>
             <a href="upload.html" class="action-card" style="background:#fefce8; border-color:#fef08a;">
                 <span class="action-icon">⛷️</span>
@@ -555,7 +557,7 @@ function generateUploadPage() {
             <form id="uploadForm">
                 <div class="form-group">
                     <label>Your Name</label>
-                    <input type="text" id="name" required placeholder="e.g. Hansi Hinterseer">
+                    <input type="text" id="name" required placeholder="e.g. Barry Buddon">
                 </div>
 
                 <div class="form-group">
@@ -743,11 +745,41 @@ function generateWebcamPage(webcams) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         .webcam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: transform 0.2s; display:flex; flex-direction:column; position: relative; text-decoration: none; color: inherit; }
+        .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        /* Hover Border Colors */
+        .webcam-card-live:hover { border-color: #ef4444; }
+        .webcam-card-static:hover { border-color: #3b82f6; }
+
         .webcam-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #f1f5f9; }
-        .webcam-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
-        .area-pil { padding: 0.25rem 0.75rem; background: white; border: 1px solid #cbd5e1; border-radius: 99px; font-size: 0.85rem; cursor: pointer; }
-        .area-pil:hover, .area-pil.active { background: #0284c7; color: white; border-color: #0284c7; }
+        
+        .badge { position: absolute; top: 8px; right: 8px; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .badge-live { background: #ef4444; animation: pulse 2s infinite; }
+        .badge-static { background: #3b82f6; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .meta-info { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+        .play-overlay { position: absolute; top: 0; left: 0; right: 0; height: 180px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; background: rgba(0,0,0,0.2); }
+        .webcam-card:hover .play-overlay { opacity: 1; }
+        .play-icon { font-size: 3rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+        /* Map Legend & Markers */
+        .map-legend { display: flex; gap: 1.5rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: inline-flex; align-items: center; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #475569; font-weight: 500; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .dot-live { background: #ef4444; border: 2px solid rgba(239, 68, 68, 0.3); }
+        .dot-static { background: #3b82f6; border: 2px solid rgba(59, 130, 246, 0.3); }
+
+        /* Custom Leaflet Marker Styles */
+        .custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .marker-live { background: #ef4444; }
+        .marker-static { background: #3b82f6; }
     </style>
 </head>
 <body>
@@ -762,20 +794,37 @@ function generateWebcamPage(webcams) {
 
         <h1>Allgäu Webcams</h1>
 
-        <!-- Map showing webcam locations -->
-        <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem;"></div>
+        <!-- Map Legend -->
+        <div class="map-legend">
+            <span style="font-weight:600; color:#1e293b; margin-right:0.5rem;">Map Key:</span>
+            <div class="legend-item"><span class="dot dot-live"></span> Live Stream</div>
+            <div class="legend-item"><span class="dot dot-static"></span> Static Image</div>
+        </div>
+
+        <!-- Map show webcam locations -->
+        <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem; border:1px solid #e2e8f0;"></div>
 
         <div class="webcam-grid">
-            ${webcams.map(cam => `
-            <div class="webcam-card">
-                <a href="${cam.imageUrl}" target="_blank">
+            ${webcams.map(cam => {
+        const isLive = cam.type === 'live';
+        const badge = isLive ? '<span class="badge badge-live">● LIVE</span>' : '<span class="badge badge-static">📷 IMAGE</span>';
+        const meta = isLive ? 'Live Stream' : `Updated: ${cam.updateInterval || 'Daily'}`;
+        const cardClass = isLive ? 'webcam-card-live' : 'webcam-card-static';
+
+        return `
+            <a href="${cam.linkUrl}" target="_blank" class="webcam-card ${cardClass}">
+                ${badge}
+                <div style="position:relative;">
                     <img src="${cam.imageUrl}" class="webcam-img" loading="lazy" alt="${cam.title}">
-                </a>
-                <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">${cam.title}</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">${cam.location}</p>
+                    ${isLive ? '<div class="play-overlay"><span class="play-icon">▶</span></div>' : ''}
                 </div>
-            </div>`).join('')}
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">${cam.title}</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">${cam.location}</p>
+                    <p class="meta-info">${meta}</p>
+                </div>
+            </a>`;
+    }).join('')}
         </div>
 
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -786,7 +835,27 @@ function generateWebcamPage(webcams) {
 
              webcams.forEach(cam => {
                  if(cam.lat && cam.lon) {
-                    L.marker([cam.lat, cam.lon]).bindPopup(\`<b>\${cam.title}</b><br><img src="\${cam.imageUrl}" width="150">\`).addTo(map);
+                    const isLive = cam.type === 'live';
+                    // Custom colored marker
+                    const icon = L.divIcon({
+                        className: 'custom-marker ' + (isLive ? 'marker-live' : 'marker-static'),
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+                        popupAnchor: [0, -10]
+                    });
+
+                    // No image in popup, just title and link
+                    const popupContent = \`
+                        <div style="text-align:center;">
+                            <b>\${cam.title}</b><br>
+                            <span style="font-size:0.85rem; color:#64748b;">\${isLive ? 'Live Stream' : 'Static Image'}</span><br>
+                            <a href="\${cam.linkUrl}" target="_blank" style="color:#0284c7; font-weight:600; text-decoration:none; display:block; margin-top:4px;">View Feed &rarr;</a>
+                        </div>
+                    \`;
+
+                    L.marker([cam.lat, cam.lon], { icon: icon })
+                     .bindPopup(popupContent)
+                     .addTo(map);
                  }
              });
         </script>

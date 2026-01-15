@@ -8,11 +8,41 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         .webcam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: transform 0.2s; display:flex; flex-direction:column; position: relative; text-decoration: none; color: inherit; }
+        .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        /* Hover Border Colors */
+        .webcam-card-live:hover { border-color: #ef4444; }
+        .webcam-card-static:hover { border-color: #3b82f6; }
+
         .webcam-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #f1f5f9; }
-        .webcam-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
-        .area-pil { padding: 0.25rem 0.75rem; background: white; border: 1px solid #cbd5e1; border-radius: 99px; font-size: 0.85rem; cursor: pointer; }
-        .area-pil:hover, .area-pil.active { background: #0284c7; color: white; border-color: #0284c7; }
+        
+        .badge { position: absolute; top: 8px; right: 8px; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .badge-live { background: #ef4444; animation: pulse 2s infinite; }
+        .badge-static { background: #3b82f6; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .meta-info { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+        .play-overlay { position: absolute; top: 0; left: 0; right: 0; height: 180px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; background: rgba(0,0,0,0.2); }
+        .webcam-card:hover .play-overlay { opacity: 1; }
+        .play-icon { font-size: 3rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+        /* Map Legend & Markers */
+        .map-legend { display: flex; gap: 1.5rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: inline-flex; align-items: center; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #475569; font-weight: 500; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .dot-live { background: #ef4444; border: 2px solid rgba(239, 68, 68, 0.3); }
+        .dot-static { background: #3b82f6; border: 2px solid rgba(59, 130, 246, 0.3); }
+
+        /* Custom Leaflet Marker Styles */
+        .custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .marker-live { background: #ef4444; }
+        .marker-static { background: #3b82f6; }
     </style>
 </head>
 <body>
@@ -27,112 +57,853 @@
 
         <h1>Allgäu Webcams</h1>
 
-        <!-- Map showing webcam locations -->
-        <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem;"></div>
+        <!-- Map Legend -->
+        <div class="map-legend">
+            <span style="font-weight:600; color:#1e293b; margin-right:0.5rem;">Map Key:</span>
+            <div class="legend-item"><span class="dot dot-live"></span> Live Stream</div>
+            <div class="legend-item"><span class="dot dot-static"></span> Static Image</div>
+        </div>
+
+        <!-- Map show webcam locations -->
+        <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem; border:1px solid #e2e8f0;"></div>
 
         <div class="webcam-grid">
             
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=12206&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=12206&2&format=44" class="webcam-img" loading="lazy" alt="Kanzelwand / Fellhorn">
-                </a>
-                <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Kanzelwand / Fellhorn</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Fellhorn</p>
+            <a href="https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcf986/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_986.jpg" class="webcam-img" loading="lazy" alt="Weiherkopf Bergstation (1,670 m) – Bolsterlang I">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=4971&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=4971&2&format=44" class="webcam-img" loading="lazy" alt="Nebelhorn">
-                </a>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Nebelhorn</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Nebelhorn-Oberstdorf</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Weiherkopf Bergstation (1,670 m) – Bolsterlang I</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Bolsterlang I</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=14246&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=14246&2&format=44" class="webcam-img" loading="lazy" alt="Schloss Hohenschwangau">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf306/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_306.jpg" class="webcam-img" loading="lazy" alt="Kanzelwand/Fellhorn (1,970 m) – Riezlern / Kleinwalsertal">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Schloss Hohenschwangau</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Hohenschwangau</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Kanzelwand/Fellhorn (1,970 m) – Riezlern / Kleinwalsertal</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Riezlern / Kleinwalsertal</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=12246&2&format=12" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=12246&2&format=12" class="webcam-img" loading="lazy" alt="Mittaggipfel">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf303/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_303.jpg" class="webcam-img" loading="lazy" alt="Fellhorn/Oberstdorf Kleinwalsertal (1,967 m) – Oberstdorf">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Mittaggipfel</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Immenstadt</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Fellhorn/Oberstdorf Kleinwalsertal (1,967 m) – Oberstdorf</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=14587&2&format=12" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=14587&2&format=12" class="webcam-img" loading="lazy" alt="Balderschwang">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf617/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_617.jpg" class="webcam-img" loading="lazy" alt="Möserbahn Berg (1,905 m) – Oberstdorf">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Balderschwang</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Balderschwang</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Möserbahn Berg (1,905 m) – Oberstdorf</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=10858&2&format=12" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=10858&2&format=12" class="webcam-img" loading="lazy" alt="Söllereck / Oberstdorf">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf304/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_304.jpg" class="webcam-img" loading="lazy" alt="Nebelhorn (2,224 m) – Oberstdorf">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Söllereck / Oberstdorf</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Oberstdorf</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nebelhorn (2,224 m) – Oberstdorf</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=5540&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=5540&2&format=44" class="webcam-img" loading="lazy" alt="Skizentrum Steinach / Pfronten">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf305/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_305.jpg" class="webcam-img" loading="lazy" alt="Oberstdorf Schanze (876 m) – Oberstdorf">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Skizentrum Steinach / Pfronten</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Pfronten</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf Schanze (876 m) – Oberstdorf</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=5577&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=5577&2&format=44" class="webcam-img" loading="lazy" alt="Breitenberg Bergstation">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcf291/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_291.jpg" class="webcam-img" loading="lazy" alt="Bad Hindelang/Oberjoch (1,380 m) – Bad Hindelang">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Breitenberg Bergstation</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Pfronten</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Bad Hindelang/Oberjoch (1,380 m) – Bad Hindelang</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Bad Hindelang</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=1448&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=1448&2&format=44" class="webcam-img" loading="lazy" alt="Talstation (Tegelberg)">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf301/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_301.jpg" class="webcam-img" loading="lazy" alt="Oberstaufen (1,032 m) – Oberstaufen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Talstation (Tegelberg)</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Schwangau</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstaufen (1,032 m) – Oberstaufen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstaufen</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
-            <div class="webcam-card">
-                <a href="https://images.bergfex.at/webcams/?id=1449&2&format=44" target="_blank">
-                    <img src="https://images.bergfex.at/webcams/?id=1449&2&format=44" class="webcam-img" loading="lazy" alt="Tegelbergbahn Bergstation">
-                </a>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf859/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_859.jpg" class="webcam-img" loading="lazy" alt="Fluhexpress Berg (1,370 m) – Oberstaufen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
                 <div style="padding:1rem;">
-                    <h3 style="margin:0; font-size:1rem;">Tegelbergbahn Bergstation</h3>
-                    <p style="margin:0.25rem 0 0; color:#64748b; font-size:0.85rem;">Schwangau</p>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Fluhexpress Berg (1,370 m) – Oberstaufen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstaufen</p>
+                    <p class="meta-info">Live Stream</p>
                 </div>
-            </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf308/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_308.jpg" class="webcam-img" loading="lazy" alt="Tegelberg (1,730 m) – Schwangau">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Tegelberg (1,730 m) – Schwangau</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Schwangau</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf309/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_309.jpg" class="webcam-img" loading="lazy" alt="Tegelberg Talstation (860 m) – Schwangau">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Tegelberg Talstation (860 m) – Schwangau</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Schwangau</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf785/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_785.jpg" class="webcam-img" loading="lazy" alt="Schloss Hohenschwangau (880 m) – Schwangau">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Schloss Hohenschwangau (880 m) – Schwangau</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Schwangau</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf790/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_790.jpg" class="webcam-img" loading="lazy" alt="Festspielhaus Neuschwanstein (795 m) – Füssen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Festspielhaus Neuschwanstein (795 m) – Füssen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Füssen</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf972/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_972.jpg" class="webcam-img" loading="lazy" alt="Hotel Hirsch (820 m) – Füssen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Hotel Hirsch (820 m) – Füssen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Füssen</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/gruentenlifte-kranzegg-rettenberg/webcams/wcf992/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_992.jpg" class="webcam-img" loading="lazy" alt="Grünten Gipfel (1,738 m) – Burgberg im Allgäu">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Grünten Gipfel (1,738 m) – Burgberg im Allgäu</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Burgberg im Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/hochgrat-oberstaufen/webcams/wcf302/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_302.jpg" class="webcam-img" loading="lazy" alt="Hochgratbahn Bergstation (1,708 m) – Oberstaufen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Hochgratbahn Bergstation (1,708 m) – Oberstaufen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstaufen</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://allgaeuer-berghof.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4422.jpg" class="webcam-img" loading="lazy" alt="Ofterschwang - Allgäuer Berghof (1,180 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Ofterschwang - Allgäuer Berghof (1,180 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://blaichach.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3543628.jpg" class="webcam-img" loading="lazy" alt="Blaichach - Gunzesried (924 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Blaichach - Gunzesried (924 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://bog.roundshot.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_5f874889412553ab64370fb2d2ab4f23.jpg" class="webcam-img" loading="lazy" alt="Ofterschwang Bergbahnen">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Ofterschwang Bergbahnen</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ok-bergbahnen.panomax.com/kanzelwand" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052880.jpg" class="webcam-img" loading="lazy" alt="Kleinwalsertal - Kanzelwandbahn (1,923 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Kleinwalsertal - Kanzelwandbahn (1,923 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ok-bergbahnen.panomax.com/nebelhorn" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052884.jpg" class="webcam-img" loading="lazy" alt="Oberstdorf - Nebelhorn (2,058 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf - Nebelhorn (2,058 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ok-bergbahnen.panomax.com/soellereck-berg" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1607.jpg" class="webcam-img" loading="lazy" alt="Oberstdorf - Söllereck Berghaus Schönblick (1,350 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf - Söllereck Berghaus Schönblick (1,350 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ok-bergbahnen.panomax.com/soellereck-ochsenhoefle" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1867.jpg" class="webcam-img" loading="lazy" alt="Oberstdorf - Söllereckbahn Tal (1,305 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf - Söllereckbahn Tal (1,305 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ok-bergbahnen.panomax.com/soellereck-schrattenwang" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3192.jpg" class="webcam-img" loading="lazy" alt="Oberstdorf - Söllereck Schrattenwang (1,400 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf - Söllereck Schrattenwang (1,400 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://nesselwang.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1499.jpg" class="webcam-img" loading="lazy" alt="Nesselwang - Alpspitzbahn Mittelstation (1,180 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nesselwang - Alpspitzbahn Mittelstation (1,180 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://sportheim-boeck.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2423.jpg" class="webcam-img" loading="lazy" alt="Nesselwang - Alpspitzbahn Sportheim Böck (1,455 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nesselwang - Alpspitzbahn Sportheim Böck (1,455 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://alpspitzbahn.panomax.com/talstation" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2820.jpg" class="webcam-img" loading="lazy" alt="Nesselwang - Alpspitzbahn Talstation (910 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nesselwang - Alpspitzbahn Talstation (910 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://balderschwang.roundshot.com/gelbhansekopf/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_a14513b05cfaf9442521aac2f759b144.jpg" class="webcam-img" loading="lazy" alt="Balderschwang Gelbhansekopf">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Balderschwang Gelbhansekopf</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://balderschwang.roundshot.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_d77e38fa98328da587cc0d8ec807e746.jpg" class="webcam-img" loading="lazy" alt="Balderschwang">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Balderschwang</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://grasgehren.roundshot.com/bolgengrat/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_6bd381d9cc2f284fd1fcc1a7bba1c42b.jpg" class="webcam-img" loading="lazy" alt="Grasgehren - Bolgengrat">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Grasgehren - Bolgengrat</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://rosenalp.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3711.jpg" class="webcam-img" loading="lazy" alt="Oberstaufen - Rosenalp (810 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstaufen - Rosenalp (810 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://tegelberg.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1732641.jpg" class="webcam-img" loading="lazy" alt="Schwangau - Tegelbergbahn (1,706 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Schwangau - Tegelbergbahn (1,706 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://schwangau.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4530.jpg" class="webcam-img" loading="lazy" alt="Schwangau - Schlossbrauhaus (800 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Schwangau - Schlossbrauhaus (800 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://hotel-blaue-burg-falkenstein.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced231.jpg" class="webcam-img" loading="lazy" alt="Pfronten - Boutique Hotel Blaue Burg Falkenstein (1,230 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Pfronten - Boutique Hotel Blaue Burg Falkenstein (1,230 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://pfronten.panomax.com/skizentrum" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3708.jpg" class="webcam-img" loading="lazy" alt="Pfronten - Skizentrum (990 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Pfronten - Skizentrum (990 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://pfronten.panomax.com/breitenbergbahn" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3705.jpg" class="webcam-img" loading="lazy" alt="Breitenbergbahn - Pfronten (1,680 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Breitenbergbahn - Pfronten (1,680 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://ostlerhuette.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1682.jpg" class="webcam-img" loading="lazy" alt="Pfronten - Ostlerhütte (1,838 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Pfronten - Ostlerhütte (1,838 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://eisenberg.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced770.jpg" class="webcam-img" loading="lazy" alt="Eisenberg - Burgruine (1,024 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Eisenberg - Burgruine (1,024 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://mittagbahn.roundshot.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_79f064a1dfe0a869e4f49e098833fb72.jpg" class="webcam-img" loading="lazy" alt="Mittagbahn">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Mittagbahn</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Immenstadt</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://gruenten.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1418.jpg" class="webcam-img" loading="lazy" alt="Rettenberg - Grünten (1,460 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Rettenberg - Grünten (1,460 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://panzer-braun.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1832.jpg" class="webcam-img" loading="lazy" alt="Sonthofen - Panzer & Braun Tiefbau (735 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Sonthofen - Panzer & Braun Tiefbau (735 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://buchenberg.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1737231.jpg" class="webcam-img" loading="lazy" alt="Buching - Buchenbergbahn (1,129 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Buching - Buchenbergbahn (1,129 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://halblech.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3392.jpg" class="webcam-img" loading="lazy" alt="Halblech im Allgäu (850 m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Halblech im Allgäu (850 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcn42691/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42691.jpg" class="webcam-img" loading="lazy" alt="Fellhornbahn summit station">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Fellhornbahn summit station</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Updated: Unknown</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcn42721/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42721.jpg" class="webcam-img" loading="lazy" alt="Nebelhornbahn/Seealpe">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nebelhornbahn/Seealpe</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Updated: Unknown</p>
+                </div>
+            </a>
+            <a href="https://bog.roundshot.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67197.jpg" class="webcam-img" loading="lazy" alt="Mountain station Weltcup-Express/Weltcuphütte">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Mountain station Weltcup-Express/Weltcuphütte</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcn66617/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_66617.jpg" class="webcam-img" loading="lazy" alt="Hörnerbahn mid-station">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Hörnerbahn mid-station</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Updated: Unknown</p>
+                </div>
+            </a>
+            <a href="https://bog.roundshot.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67198.jpg" class="webcam-img" loading="lazy" alt="Summit Ofterschwanger Horn">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Summit Ofterschwanger Horn</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcn70042/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_70042.jpg" class="webcam-img" loading="lazy" alt="Iselertal/Iseler">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Iselertal/Iseler</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Updated: Unknown</p>
+                </div>
+            </a>
+            <a href="https://www.skiresort.info/ski-resort/breitenberg-hochalpe-pfronten/webcams/wcn57883/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_57883.jpg" class="webcam-img" loading="lazy" alt="Breitenbergbahn mountain station (1,501 m)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Breitenbergbahn mountain station (1,501 m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Allgäu</p>
+                    <p class="meta-info">Updated: Unknown</p>
+                </div>
+            </a>
+            <a href="https://www.ok-bergbahnen.com/service/webcams/nebelhorn/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=4971&2&format=12" class="webcam-img" loading="lazy" alt="Nebelhorn Gipfel (2224m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Nebelhorn Gipfel (2224m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=12206&2&format=12" class="webcam-img" loading="lazy" alt="Fellhorn Mittelstation (1780m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Fellhorn Mittelstation (1780m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://soellereck.panomax.com/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=10858&2&format=12" class="webcam-img" loading="lazy" alt="Söllereck (1358m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Söllereck (1358m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.ok-bergbahnen.com/service/webcams/walmendingerhorn/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=3240&2&format=12" class="webcam-img" loading="lazy" alt="Walmendingerhorn (1990m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Walmendingerhorn (1990m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Kleinwalsertal</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.ok-bergbahnen.com/service/webcams/ifen/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=288&2&format=12" class="webcam-img" loading="lazy" alt="Ifen (2030m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Ifen (2030m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Kleinwalsertal</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=3238&2&format=12" class="webcam-img" loading="lazy" alt="Kanzelwand Berg (1957m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Kanzelwand Berg (1957m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Kleinwalsertal</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.oberstdorf.de/webcams/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=1658&2&format=12" class="webcam-img" loading="lazy" alt="Oberstdorf Marktplatz">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Oberstdorf Marktplatz</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstdorf</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.breitenbergbahn.de/service/webcams.html" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=5577&2&format=12" class="webcam-img" loading="lazy" alt="Breitenberg (1730m)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Breitenberg (1730m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Pfronten</p>
+                    <p class="meta-info">Updated: 10 min</p>
+                </div>
+            </a>
+            <a href="https://www.tegelbergbahn.de/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=1449&2&format=12" class="webcam-img" loading="lazy" alt="Tegelberg (1720m)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Tegelberg (1720m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Schwangau</p>
+                    <p class="meta-info">Updated: 10 min</p>
+                </div>
+            </a>
+            <a href="https://www.tannheimertal.com/webcams/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=4492&2&format=12" class="webcam-img" loading="lazy" alt="Neunerköpfle (1792m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Neunerköpfle (1792m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Tannheimer Tal</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.tannheimertal.com/webcams/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=6121&2&format=12" class="webcam-img" loading="lazy" alt="Füssener Jöchle (1818m)">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Füssener Jöchle (1818m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Tannheim / Grän</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.hoernerbahn.de/webcams/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=3242&2&format=12" class="webcam-img" loading="lazy" alt="Hörnerbahn Bolsterlang">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Hörnerbahn Bolsterlang</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Bolsterlang</p>
+                    <p class="meta-info">Updated: Hourly</p>
+                </div>
+            </a>
+            <a href="https://www.go-ofterschwang.de/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=2888&2&format=12" class="webcam-img" loading="lazy" alt="Ofterschwang (Gunzesrieder Tal)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Ofterschwang (Gunzesrieder Tal)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Ofterschwang</p>
+                    <p class="meta-info">Updated: 10 min</p>
+                </div>
+            </a>
+            <a href="https://www.grasgehren.de/webcam/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=2621&2&format=12" class="webcam-img" loading="lazy" alt="Riedbergerhorn / Grasgehren">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Riedbergerhorn / Grasgehren</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Obermaiselstein</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.alpsee-bergwelt.de/" target="_blank" class="webcam-card webcam-card-live">
+                <span class="badge badge-live">● LIVE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=3324&2&format=12" class="webcam-img" loading="lazy" alt="Alpsee / Bärenfalle">
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Alpsee / Bärenfalle</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Immenstadt</p>
+                    <p class="meta-info">Live Stream</p>
+                </div>
+            </a>
+            <a href="https://www.bergfex.de/gruenten/webcams/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=16720&2&format=12" class="webcam-img" loading="lazy" alt="Grünten (1738m)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Grünten (1738m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Rettenberg</p>
+                    <p class="meta-info">Updated: Hourly</p>
+                </div>
+            </a>
+            <a href="https://www.hochgrat.de/webcams/" target="_blank" class="webcam-card webcam-card-static">
+                <span class="badge badge-static">📷 IMAGE</span>
+                <div style="position:relative;">
+                    <img src="https://images.bergfex.at/webcams/?id=1798&2&format=12" class="webcam-img" loading="lazy" alt="Hochgrat (1834m)">
+                    
+                </div>
+                <div style="padding:1rem;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:600;">Hochgrat (1834m)</h3>
+                    <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">Oberstaufen</p>
+                    <p class="meta-info">Updated: 15 min</p>
+                </div>
+            </a>
         </div>
 
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script>
-             const webcams = [{"title":"Kanzelwand / Fellhorn","location":"Fellhorn","imageUrl":"https://images.bergfex.at/webcams/?id=12206&2&format=44","lat":47.35,"lon":10.25},{"title":"Nebelhorn","location":"Nebelhorn-Oberstdorf","imageUrl":"https://images.bergfex.at/webcams/?id=4971&2&format=44","lat":47.4,"lon":10.35},{"title":"Schloss Hohenschwangau","location":"Hohenschwangau","imageUrl":"https://images.bergfex.at/webcams/?id=14246&2&format=44","lat":47.55,"lon":10.74},{"title":"Mittaggipfel","location":"Immenstadt","imageUrl":"https://images.bergfex.at/webcams/?id=12246&2&format=12","lat":47.55,"lon":10.18},{"title":"Balderschwang","location":"Balderschwang","imageUrl":"https://images.bergfex.at/webcams/?id=14587&2&format=12","lat":47.46,"lon":10.1},{"title":"Söllereck / Oberstdorf","location":"Oberstdorf","imageUrl":"https://images.bergfex.at/webcams/?id=10858&2&format=12","lat":47.38,"lon":10.25},{"title":"Skizentrum Steinach / Pfronten","location":"Pfronten","imageUrl":"https://images.bergfex.at/webcams/?id=5540&2&format=44","lat":47.58,"lon":10.56},{"title":"Breitenberg Bergstation","location":"Pfronten","imageUrl":"https://images.bergfex.at/webcams/?id=5577&2&format=44","lat":47.55,"lon":10.57},{"title":"Talstation (Tegelberg)","location":"Schwangau","imageUrl":"https://images.bergfex.at/webcams/?id=1448&2&format=44","lat":47.57,"lon":10.75},{"title":"Tegelbergbahn Bergstation","location":"Schwangau","imageUrl":"https://images.bergfex.at/webcams/?id=1449&2&format=44","lat":47.56,"lon":10.76}];
+             const webcams = [{"title":"Weiherkopf Bergstation (1,670 m) – Bolsterlang I","location":"Bolsterlang I","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcf986/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_986.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Kanzelwand/Fellhorn (1,970 m) – Riezlern / Kleinwalsertal","location":"Riezlern / Kleinwalsertal","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf306/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_306.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Fellhorn/Oberstdorf Kleinwalsertal (1,967 m) – Oberstdorf","location":"Oberstdorf","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf303/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_303.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Möserbahn Berg (1,905 m) – Oberstdorf","location":"Oberstdorf","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcf617/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_617.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Nebelhorn (2,224 m) – Oberstdorf","location":"Oberstdorf","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf304/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_304.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Oberstdorf Schanze (876 m) – Oberstdorf","location":"Oberstdorf","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcf305/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_305.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Bad Hindelang/Oberjoch (1,380 m) – Bad Hindelang","location":"Bad Hindelang","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcf291/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_291.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Oberstaufen (1,032 m) – Oberstaufen","location":"Oberstaufen","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf301/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_301.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Fluhexpress Berg (1,370 m) – Oberstaufen","location":"Oberstaufen","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/steibis-imberg-oberstaufen/webcams/wcf859/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_859.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Tegelberg (1,730 m) – Schwangau","location":"Schwangau","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf308/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_308.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Tegelberg Talstation (860 m) – Schwangau","location":"Schwangau","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf309/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_309.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Schloss Hohenschwangau (880 m) – Schwangau","location":"Schwangau","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf785/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_785.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Festspielhaus Neuschwanstein (795 m) – Füssen","location":"Füssen","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf790/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_790.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Hotel Hirsch (820 m) – Füssen","location":"Füssen","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/tegelberg-schwangau/webcams/wcf972/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_972.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Grünten Gipfel (1,738 m) – Burgberg im Allgäu","location":"Burgberg im Allgäu","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/gruentenlifte-kranzegg-rettenberg/webcams/wcf992/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_992.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Hochgratbahn Bergstation (1,708 m) – Oberstaufen","location":"Oberstaufen","type":"live","linkUrl":"https://www.skiresort.info/ski-resort/hochgrat-oberstaufen/webcams/wcf302/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/livestream_37_302.jpg","updateInterval":"Unknown","provider":"Feratel"},{"title":"Ofterschwang - Allgäuer Berghof (1,180 m)","location":"Allgäu","type":"live","linkUrl":"https://allgaeuer-berghof.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4422.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Blaichach - Gunzesried (924 m)","location":"Allgäu","type":"live","linkUrl":"https://blaichach.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3543628.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Ofterschwang Bergbahnen","location":"Allgäu","type":"live","linkUrl":"https://bog.roundshot.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_5f874889412553ab64370fb2d2ab4f23.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Kleinwalsertal - Kanzelwandbahn (1,923 m)","location":"Allgäu","type":"live","linkUrl":"https://ok-bergbahnen.panomax.com/kanzelwand","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052880.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Oberstdorf - Nebelhorn (2,058 m)","location":"Allgäu","type":"live","linkUrl":"https://ok-bergbahnen.panomax.com/nebelhorn","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4052884.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Oberstdorf - Söllereck Berghaus Schönblick (1,350 m)","location":"Allgäu","type":"live","linkUrl":"https://ok-bergbahnen.panomax.com/soellereck-berg","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1607.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Oberstdorf - Söllereckbahn Tal (1,305 m)","location":"Allgäu","type":"live","linkUrl":"https://ok-bergbahnen.panomax.com/soellereck-ochsenhoefle","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1867.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Oberstdorf - Söllereck Schrattenwang (1,400 m)","location":"Allgäu","type":"live","linkUrl":"https://ok-bergbahnen.panomax.com/soellereck-schrattenwang","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3192.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Nesselwang - Alpspitzbahn Mittelstation (1,180 m)","location":"Allgäu","type":"live","linkUrl":"https://nesselwang.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1499.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Nesselwang - Alpspitzbahn Sportheim Böck (1,455 m)","location":"Allgäu","type":"live","linkUrl":"https://sportheim-boeck.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2423.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Nesselwang - Alpspitzbahn Talstation (910 m)","location":"Allgäu","type":"live","linkUrl":"https://alpspitzbahn.panomax.com/talstation","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced2820.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Balderschwang Gelbhansekopf","location":"Allgäu","type":"live","linkUrl":"https://balderschwang.roundshot.com/gelbhansekopf/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_a14513b05cfaf9442521aac2f759b144.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Balderschwang","location":"Allgäu","type":"live","linkUrl":"https://balderschwang.roundshot.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_d77e38fa98328da587cc0d8ec807e746.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Grasgehren - Bolgengrat","location":"Allgäu","type":"live","linkUrl":"https://grasgehren.roundshot.com/bolgengrat/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_6bd381d9cc2f284fd1fcc1a7bba1c42b.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Oberstaufen - Rosenalp (810 m)","location":"Allgäu","type":"live","linkUrl":"https://rosenalp.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3711.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Schwangau - Tegelbergbahn (1,706 m)","location":"Allgäu","type":"live","linkUrl":"https://tegelberg.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1732641.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Schwangau - Schlossbrauhaus (800 m)","location":"Allgäu","type":"live","linkUrl":"https://schwangau.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced4530.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Pfronten - Boutique Hotel Blaue Burg Falkenstein (1,230 m)","location":"Allgäu","type":"live","linkUrl":"https://hotel-blaue-burg-falkenstein.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced231.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Pfronten - Skizentrum (990 m)","location":"Allgäu","type":"live","linkUrl":"https://pfronten.panomax.com/skizentrum","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3708.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Breitenbergbahn - Pfronten (1,680 m)","location":"Allgäu","type":"live","linkUrl":"https://pfronten.panomax.com/breitenbergbahn","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3705.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Pfronten - Ostlerhütte (1,838 m)","location":"Allgäu","type":"live","linkUrl":"https://ostlerhuette.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1682.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Eisenberg - Burgruine (1,024 m)","location":"Allgäu","type":"live","linkUrl":"https://eisenberg.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced770.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Mittagbahn","location":"Immenstadt","type":"live","linkUrl":"https://mittagbahn.roundshot.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/roundshot_79f064a1dfe0a869e4f49e098833fb72.jpg","updateInterval":"Unknown","provider":"Roundshot","lat":47.545,"lon":10.187},{"title":"Rettenberg - Grünten (1,460 m)","location":"Allgäu","type":"live","linkUrl":"https://gruenten.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1418.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Sonthofen - Panzer & Braun Tiefbau (735 m)","location":"Allgäu","type":"live","linkUrl":"https://panzer-braun.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1832.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Buching - Buchenbergbahn (1,129 m)","location":"Allgäu","type":"live","linkUrl":"https://buchenberg.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced1737231.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Halblech im Allgäu (850 m)","location":"Allgäu","type":"live","linkUrl":"https://halblech.panomax.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/panomax_reduced3392.jpg","updateInterval":"Unknown","provider":"Panomax"},{"title":"Fellhornbahn summit station","location":"Allgäu","type":"static","linkUrl":"https://www.skiresort.info/ski-resort/fellhorn-kanzelwand-oberstdorf-riezlern/webcams/wcn42691/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42691.jpg","updateInterval":"Unknown","provider":"Skiresort.info"},{"title":"Nebelhornbahn/Seealpe","location":"Allgäu","type":"static","linkUrl":"https://www.skiresort.info/ski-resort/nebelhorn-oberstdorf/webcams/wcn42721/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_42721.jpg","updateInterval":"Unknown","provider":"Skiresort.info"},{"title":"Mountain station Weltcup-Express/Weltcuphütte","location":"Allgäu","type":"live","linkUrl":"https://bog.roundshot.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67197.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Hörnerbahn mid-station","location":"Allgäu","type":"static","linkUrl":"https://www.skiresort.info/ski-resort/hoernerbahn-bolsterlang/webcams/wcn66617/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_66617.jpg","updateInterval":"Unknown","provider":"Skiresort.info"},{"title":"Summit Ofterschwanger Horn","location":"Allgäu","type":"live","linkUrl":"https://bog.roundshot.com/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_67198.jpg","updateInterval":"Unknown","provider":"Roundshot"},{"title":"Iselertal/Iseler","location":"Allgäu","type":"static","linkUrl":"https://www.skiresort.info/ski-resort/oberjoch-bad-hindelang-iseler/webcams/wcn70042/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_70042.jpg","updateInterval":"Unknown","provider":"Skiresort.info"},{"title":"Breitenbergbahn mountain station (1,501 m)","location":"Allgäu","type":"static","linkUrl":"https://www.skiresort.info/ski-resort/breitenberg-hochalpe-pfronten/webcams/wcn57883/","imageUrl":"https://www.skiresort-service.com/typo3temp/_processed_/_cams_/webcam_57883.jpg","updateInterval":"Unknown","provider":"Skiresort.info"},{"title":"Nebelhorn Gipfel (2224m)","location":"Oberstdorf","type":"live","lat":47.424,"lon":10.354,"imageUrl":"https://images.bergfex.at/webcams/?id=4971&2&format=12","linkUrl":"https://www.ok-bergbahnen.com/service/webcams/nebelhorn/"},{"title":"Fellhorn Mittelstation (1780m)","location":"Oberstdorf","type":"live","lat":47.352,"lon":10.247,"imageUrl":"https://images.bergfex.at/webcams/?id=12206&2&format=12","linkUrl":"https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/"},{"title":"Söllereck (1358m)","location":"Oberstdorf","type":"live","lat":47.382,"lon":10.251,"imageUrl":"https://images.bergfex.at/webcams/?id=10858&2&format=12","linkUrl":"https://soellereck.panomax.com/"},{"title":"Walmendingerhorn (1990m)","location":"Kleinwalsertal","type":"live","lat":47.327,"lon":10.134,"imageUrl":"https://images.bergfex.at/webcams/?id=3240&2&format=12","linkUrl":"https://www.ok-bergbahnen.com/service/webcams/walmendingerhorn/"},{"title":"Ifen (2030m)","location":"Kleinwalsertal","type":"live","lat":47.358,"lon":10.106,"imageUrl":"https://images.bergfex.at/webcams/?id=288&2&format=12","linkUrl":"https://www.ok-bergbahnen.com/service/webcams/ifen/"},{"title":"Kanzelwand Berg (1957m)","location":"Kleinwalsertal","type":"live","lat":47.33,"lon":10.18,"imageUrl":"https://images.bergfex.at/webcams/?id=3238&2&format=12","linkUrl":"https://www.ok-bergbahnen.com/service/webcams/fellhorn-kanzelwand/"},{"title":"Oberstdorf Marktplatz","location":"Oberstdorf","type":"live","lat":47.408,"lon":10.278,"imageUrl":"https://images.bergfex.at/webcams/?id=1658&2&format=12","linkUrl":"https://www.oberstdorf.de/webcams/"},{"title":"Breitenberg (1730m)","location":"Pfronten","type":"static","updateInterval":"10 min","lat":47.551,"lon":10.575,"imageUrl":"https://images.bergfex.at/webcams/?id=5577&2&format=12","linkUrl":"https://www.breitenbergbahn.de/service/webcams.html"},{"title":"Tegelberg (1720m)","location":"Schwangau","type":"static","updateInterval":"10 min","lat":47.567,"lon":10.767,"imageUrl":"https://images.bergfex.at/webcams/?id=1449&2&format=12","linkUrl":"https://www.tegelbergbahn.de/"},{"title":"Neunerköpfle (1792m)","location":"Tannheimer Tal","type":"live","lat":47.485,"lon":10.534,"imageUrl":"https://images.bergfex.at/webcams/?id=4492&2&format=12","linkUrl":"https://www.tannheimertal.com/webcams/"},{"title":"Füssener Jöchle (1818m)","location":"Tannheim / Grän","type":"live","lat":47.502,"lon":10.57,"imageUrl":"https://images.bergfex.at/webcams/?id=6121&2&format=12","linkUrl":"https://www.tannheimertal.com/webcams/"},{"title":"Hörnerbahn Bolsterlang","location":"Bolsterlang","type":"static","updateInterval":"Hourly","lat":47.465,"lon":10.218,"imageUrl":"https://images.bergfex.at/webcams/?id=3242&2&format=12","linkUrl":"https://www.hoernerbahn.de/webcams/"},{"title":"Ofterschwang (Gunzesrieder Tal)","location":"Ofterschwang","type":"static","updateInterval":"10 min","lat":47.505,"lon":10.23,"imageUrl":"https://images.bergfex.at/webcams/?id=2888&2&format=12","linkUrl":"https://www.go-ofterschwang.de/"},{"title":"Riedbergerhorn / Grasgehren","location":"Obermaiselstein","type":"live","lat":47.442,"lon":10.177,"imageUrl":"https://images.bergfex.at/webcams/?id=2621&2&format=12","linkUrl":"https://www.grasgehren.de/webcam/"},{"title":"Alpsee / Bärenfalle","location":"Immenstadt","type":"live","lat":47.558,"lon":10.15,"imageUrl":"https://images.bergfex.at/webcams/?id=3324&2&format=12","linkUrl":"https://www.alpsee-bergwelt.de/"},{"title":"Grünten (1738m)","location":"Rettenberg","type":"static","updateInterval":"Hourly","lat":47.554,"lon":10.316,"imageUrl":"https://images.bergfex.at/webcams/?id=16720&2&format=12","linkUrl":"https://www.bergfex.de/gruenten/webcams/"},{"title":"Hochgrat (1834m)","location":"Oberstaufen","type":"static","updateInterval":"15 min","lat":47.495,"lon":10.076,"imageUrl":"https://images.bergfex.at/webcams/?id=1798&2&format=12","linkUrl":"https://www.hochgrat.de/webcams/"}];
              const map = L.map('map').setView([47.45, 10.3], 9);
              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
              webcams.forEach(cam => {
                  if(cam.lat && cam.lon) {
-                    L.marker([cam.lat, cam.lon]).bindPopup(`<b>${cam.title}</b><br><img src="${cam.imageUrl}" width="150">`).addTo(map);
+                    const isLive = cam.type === 'live';
+                    // Custom colored marker
+                    const icon = L.divIcon({
+                        className: 'custom-marker ' + (isLive ? 'marker-live' : 'marker-static'),
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+                        popupAnchor: [0, -10]
+                    });
+
+                    // No image in popup, just title and link
+                    const popupContent = `
+                        <div style="text-align:center;">
+                            <b>${cam.title}</b><br>
+                            <span style="font-size:0.85rem; color:#64748b;">${isLive ? 'Live Stream' : 'Static Image'}</span><br>
+                            <a href="${cam.linkUrl}" target="_blank" style="color:#0284c7; font-weight:600; text-decoration:none; display:block; margin-top:4px;">View Feed &rarr;</a>
+                        </div>
+                    `;
+
+                    L.marker([cam.lat, cam.lon], { icon: icon })
+                     .bindPopup(popupContent)
+                     .addTo(map);
                  }
              });
         </script>
