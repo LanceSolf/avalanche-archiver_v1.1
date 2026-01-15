@@ -54,3 +54,4 @@ jobs:
           commit_message: "Routine data update"
           branch: master
           file_pattern: "data/* archive/* index.html"
+          pull_before_push: true
