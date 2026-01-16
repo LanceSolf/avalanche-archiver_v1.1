@@ -14,76 +14,10 @@
         input[type="file"] { width: 100%; padding: 0.5rem; border: 1px dashed #cbd5e1; border-radius: 6px; }
         button { background: #0284c7; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s; }
         button:hover { background: #0369a1; }
-        .map-picker { height: 300px; width: 100%; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 0.5rem; position: relative; }
+        .map-picker { height: 300px; width: 100%; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 0.5rem; }
         .status-msg { margin-top: 1rem; padding: 1rem; border-radius: 6px; display: none; }
         .success { background: #dcfce7; color: #166534; }
         .error { background: #fee2e2; color: #991b1b; }
-
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s; }
-        .modal { background: white; padding: 2rem; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align:center; }
-        .modal h3 { margin-top: 0; color: #ef4444; }
-        .modal-actions { margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; }
-        .btn-action-primary { background: #0ea5e9; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight:600; }
-        .btn-action-secondary { background: #e2e8f0; color: #64748b; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        
-        .shake { animation: shake 0.4s ease-in-out; }
-        .map-error { border: 2px solid #ef4444 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
-
-        /* Edge-style Native Bubble */
-        .native-style-bubble {
-            position: absolute;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 12px 16px;
-            border-radius: 4px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            max-width: 250px;
-        }
-        .native-style-bubble.visible { opacity: 1; pointer-events: auto; }
-        .native-style-bubble::after {
-            content: '';
-            position: absolute;
-            border-width: 6px;
-            border-style: solid;
-            border-color: #ffffff transparent transparent transparent;
-        }
-        /* Top placement */
-        .native-style-bubble.top { bottom: 100%; left: 0; margin-bottom: 10px; }
-        .native-style-bubble.top::after { top: 100%; left: 20px; }
-        
-        .native-style-icon {
-            background: #f97316;
-            color: white;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 3px;
-            font-weight: bold;
-            font-family: sans-serif;
-            font-size: 14px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .native-style-text {
-            color: #1e293b;
-            font-family: system-ui, -apple-system, sans-serif;
-            font-size: 13px;
-            line-height: 1.4;
-        }
     </style>
 </head>
 <body>
@@ -118,7 +52,7 @@
                     <div id="locationStatus" style="font-size:0.85rem; color:#64748b; margin-top:0.5rem;"></div>
                 </div>
 
-                <div class="form-group" style="position:relative;">
+                <div class="form-group">
                     <label>Location</label>
                     <div style="margin-bottom:0.5rem;">
                         <button type="button" id="useLocationBtn" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; width:auto; padding:0.5rem 1rem;">📍 Use Current Location</button>
@@ -127,15 +61,6 @@
                     <div id="pickerMap" class="map-picker"></div>
                     <input type="hidden" id="lat">
                     <input type="hidden" id="lon">
-
-                    <!-- Native Error Bubble -->
-                    <div id="locationErrorBubble" class="native-style-bubble top">
-                        <div class="native-style-icon">!</div>
-                        <div class="native-style-text">
-                            <strong>It's not alot of good if we don't know where it is!</strong><br>
-                            Please select position on the map.
-                        </div>
-                    </div>
                 </div>
 
                 <div class="form-group">
@@ -146,18 +71,6 @@
                 <button type="submit">Submit Report</button>
                 <div id="status" class="status-msg"></div>
             </form>
-
-            <!-- Sassy No-Image Modal -->
-            <div id="noImageModal" class="modal-overlay">
-                <div class="modal">
-                    <h3 style="font-size:1.5rem; margin-bottom:1rem;">No image? Boooooo! 👎</h3>
-                    <p style="font-size:1.1rem; color:#334155; margin-bottom:2rem;">Just words is soo boring 🥱</p>
-                    <div class="modal-actions">
-                        <button class="btn-action-secondary" onclick="confirmSubmitWithoutImage()">I'm Boring (Submit)</button>
-                        <button class="btn-action-primary" onclick="closeNoImageModal()">Upload Image</button>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -188,14 +101,10 @@
                 document.getElementById('lat').value = lat;
                 document.getElementById('lon').value = lng;
                 
-                // Clear errors
-                clearLocationError();
-
                 marker.on('dragend', function(event) {
                     const position = marker.getLatLng();
                     document.getElementById('lat').value = position.lat;
                     document.getElementById('lon').value = position.lng;
-                    clearLocationError(); 
                 });
             }
 
@@ -211,47 +120,15 @@
                      navigator.geolocation.getCurrentPosition(pos => {
                          setLocation(pos.coords.latitude, pos.coords.longitude);
                          map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-                         btn.innerText = '📍 Use Current Location';
+                         btn.innerText = originalText;
                      }, err => {
                          alert('Could not get location. Please check browser permissions.');
-                         btn.innerText = '📍 Use Current Location';
+                         btn.innerText = originalText;
                      });
                  } else {
                      alert('Geolocation is not supported by your browser');
                  }
             });
-
-            // Location Error Helpers
-            const bubble = document.getElementById('locationErrorBubble');
-            const mapContainer = document.getElementById('pickerMap');
-
-            function showLocationError() {
-                // Visuals
-                mapContainer.classList.add('map-error');
-                mapContainer.classList.add('shake');
-                bubble.classList.add('visible');
-                
-                // Align bubble to top left of map
-                // Note: bubble is relative to container if container has position. 
-                // We added position:relative to .form-group containing this.
-                // Simple positioning:
-                // bubble is absolute. top: -height.
-                // Reset styles if needed or rely on CSS classes 'top'
-                
-                // Scroll
-                mapContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                // Auto-hide bubble after 5s but keep red border until fixed?
-                setTimeout(() => {
-                    bubble.classList.remove('visible');
-                    mapContainer.classList.remove('shake');
-                }, 5000);
-            }
-
-            function clearLocationError() {
-                mapContainer.classList.remove('map-error');
-                bubble.classList.remove('visible');
-            }
 
             // 3. EXIF Extraction
             document.getElementById('photo').addEventListener('change', function(e) {
@@ -287,113 +164,83 @@
             });
 
             // 4. Submit
-            const form = document.getElementById('uploadForm');
-            const noImageModal = document.getElementById('noImageModal');
-            let bypassImageCheck = false;
-
             document.getElementById('uploadForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                // 1. Validate Location
-                const lat = document.getElementById('lat').value;
-                const lon = document.getElementById('lon').value;
-
-                if (!lat || !lon) {
-                    showLocationError();
-                    return;
-                }
-
-                // 2. Validate Image (Sassy Check)
-                const fileInput = document.getElementById('photo');
-                if (fileInput.files.length === 0 && !bypassImageCheck) {
-                    noImageModal.style.display = 'flex';
-                    return;
-                }
-                
-                await performUpload();
-            });
-
-            async function performUpload() {
-                const btn = form.querySelector('button[type="submit"]');
+                const btn = e.target.querySelector('button');
                 btn.disabled = true;
                 btn.innerText = 'Uploading...';
-                
-                const statusDiv = document.getElementById('status');
-                statusDiv.style.display = 'block';
-                statusDiv.className = 'status-msg';
-                statusDiv.innerText = 'Uploading...';
 
-                try {
-                    const data = {
-                        user: document.getElementById('name').value,
-                        date: dateSelect.value,
-                        comment: document.getElementById('comment').value,
-                        lat: document.getElementById('lat').value,
-                        lon: document.getElementById('lon').value,
-                        images: []
-                    };
+                const data = {
+                    user: document.getElementById('name').value,
+                    date: dateSelect.value,
+                    comment: document.getElementById('comment').value,
+                    lat: document.getElementById('lat').value,
+                    lon: document.getElementById('lon').value,
+                    images: []
+                };
 
-                    // Read Images as Base64
-                    const fileInput = document.getElementById('photo');
-                    if (fileInput.files.length > 0) {
-                         const promises = Array.from(fileInput.files).map(file => {
-                             return new Promise((resolve) => {
-                                 const reader = new FileReader();
-                                 reader.onload = (e) => resolve(e.target.result);
-                                 reader.readAsDataURL(file);
-                             });
+                // Read Images as Base64
+                const fileInput = document.getElementById('photo');
+                if (fileInput.files.length > 0) {
+                     const promises = Array.from(fileInput.files).map(file => {
+                         return new Promise((resolve) => {
+                             const reader = new FileReader();
+                             reader.onload = (e) => resolve(e.target.result);
+                             reader.readAsDataURL(file);
                          });
-                         
-                         data.images = await Promise.all(promises);
-                    }
-                    // Support legacy
-                    if(data.images.length > 0) data.image = data.images[0];
-
-                    const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev/upload';
-                    const res = await fetch(WORKER_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-
-                    if(res.ok) {
-                        statusDiv.className = 'status-msg success';
-                        statusDiv.innerText = 'Report Submitted! (Pending approval/display on next site build)';
-                        form.reset();
-                        // Clear map
-                        if(marker) map.removeLayer(marker);
-                        document.getElementById('lat').value = '';
-                        document.getElementById('lon').value = '';
-                        document.getElementById('locationStatus').innerText = '';
-                        bypassImageCheck = false;
-                    } else {
-                        const errorText = await res.text();
-                        throw new Error('Upload failed (' + res.status + '): ' + errorText);
-                    }
-
-                } catch(err) {
-                    console.error(err);
-                    statusDiv.className = 'status-msg error';
-                    statusDiv.innerText = 'Error: ' + err.message;
-                } finally {
-                    btn.disabled = false;
-                    btn.innerText = 'Submit Report';
+                     });
+                     
+                     data.images = await Promise.all(promises);
+                     await sendData(data);
+                } else {
+                    await sendData(data);
                 }
-            }
 
-            window.closeNoImageModal = function() {
-                 noImageModal.style.display = 'none';
-                 document.getElementById('photo').click(); 
-            };
+                async function sendData(payload) {
+                    try {
+                        const statusDiv = document.getElementById('status');
+                        // POST to Cloudflare Worker
+                        const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev/upload';
+                        
+                        // For demo purposes (mock) -> Switched to Real
+                        // console.log('Would upload:', payload);
+                        
+                        statusDiv.style.display = 'block';
+                        statusDiv.className = 'status-msg';
+                        statusDiv.innerText = 'Uploading...';
+                        
+                        const res = await fetch(WORKER_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
 
-            window.confirmSubmitWithoutImage = function() {
-                bypassImageCheck = true;
-                noImageModal.style.display = 'none';
-                // Trigger submit again, this time bypassing helper
-                // We can just call performUpload directly since validation passed
-                performUpload(); // But strictly we should re-validate location just in case? 
-                // We know location is valid because we reached check 2.
-            };
+                        if(res.ok) {
+                            statusDiv.className = 'status-msg success';
+                            statusDiv.innerText = 'Report Submitted! (Pending approval/display on next site build)';
+                            e.target.reset();
+                            // Clear map
+                            if(marker) map.removeLayer(marker);
+                            document.getElementById('lat').value = '';
+                            document.getElementById('lon').value = '';
+                            document.getElementById('locationStatus').innerText = '';
+                        } else {
+                            const errorText = await res.text();
+                            throw new Error('Upload failed (' + res.status + '): ' + errorText);
+                        }
+
+                    } catch(err) {
+                        console.error(err);
+                        alert('Error uploading: ' + err.message);
+                        const statusDiv = document.getElementById('status');
+                        statusDiv.className = 'status-msg error';
+                        statusDiv.innerText = 'Error: ' + err.message;
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerText = 'Submit Report';
+                    }
+                }
+            });
         </script>
     </div>
 </body>
