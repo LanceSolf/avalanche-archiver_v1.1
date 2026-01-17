@@ -141,8 +141,15 @@
         <!-- GPX Routes -->
         <div class="control-section">
             <h3>GPX Routes</h3>
-            <div class="gpx-list" id="gpx-list">
-                <div class="no-routes">Loading routes...</div>
+            <div class="gpx-upload-container">
+                <input type="file" id="gpx-file-input" accept=".gpx" class="hidden-input">
+                <label for="gpx-file-input" class="upload-btn">
+                    📂 Upload GPX
+                </label>
+                <div id="gpx-status" class="gpx-status" style="display: none;">
+                    <span id="gpx-filename">filename.gpx</span>
+                    <button id="btn-clear-gpx" class="clear-btn" title="Remove GPX">✕</button>
+                </div>
             </div>
         </div>
     </div>

@@ -102,8 +102,8 @@ map.on('load', () => {
         }
     });
 
-    // Load GPX files
-    loadGPXFiles();
+    // Initialize File Input listeners
+    initGPXUpload();
 });
 
 // Create ShadeMap instance
@@ -305,85 +305,82 @@ ctrlRotateRight.addEventListener('click', () => {
     map.easeTo({ bearing: map.getBearing() + 22.5, duration: 300 });
 });
 
-// GPX Loading Functions
-async function loadGPXFiles() {
-    try {
-        const response = await fetch('../gpx/');
-        const html = await response.text();
+// GPX Upload Logic
+function initGPXUpload() {
+    const fileInput = document.getElementById('gpx-file-input');
+    const clearBtn = document.getElementById('btn-clear-gpx');
+    const statusDiv = document.getElementById('gpx-status');
+    const filenameSpan = document.getElementById('gpx-filename');
+    const uploadLabel = document.querySelector('.upload-btn');
 
-        // Parse HTML to find .gpx files
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        // Filter anchor tags that point to GPX files
-        const links = Array.from(doc.querySelectorAll('a')).filter(a => a.href.endsWith('.gpx'));
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-        const gpxFiles = links.map(a => {
-            const url = new URL(a.href);
-            return url.pathname.split('/').pop();
-        });
+        filenameSpan.textContent = file.name;
+        uploadLabel.style.display = 'none';
+        statusDiv.style.display = 'flex';
 
-        displayGPXList(gpxFiles);
-    } catch (error) {
-        console.error('Error loading GPX files:', error);
-        // Fallback: try to load a known GPX file list or show empty state
-        displayGPXList([]);
-    }
-}
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const gpxText = event.target.result;
+                const parser = new DOMParser();
+                const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
+                const geojson = toGeoJSON.gpx(gpxDoc);
 
-function displayGPXList(files) {
-    const gpxList = document.getElementById('gpx-list');
+                // Update map data
+                map.getSource('gpx-route').setData(geojson);
 
-    if (files.length === 0) {
-        gpxList.innerHTML = '<div class="no-routes">No GPX routes found. Add .gpx files to /gpx/ folder.</div>';
-        return;
-    }
+                // Fit bounds
+                const bounds = new maplibregl.LngLatBounds();
+                let hasFeatures = false;
 
-    gpxList.innerHTML = '';
-    files.forEach(file => {
-        const item = document.createElement('div');
-        item.className = 'gpx-item';
-        item.textContent = file.replace('.gpx', '');
-        item.dataset.file = file;
-        item.addEventListener('click', () => loadGPXRoute(file));
-        gpxList.appendChild(item);
-    });
-}
-
-async function loadGPXRoute(filename) {
-    try {
-        const response = await fetch(`../gpx/${filename}`);
-        const gpxText = await response.text();
-
-        // Parse GPX to GeoJSON
-        const parser = new DOMParser();
-        const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-        const geojson = toGeoJSON.gpx(gpxDoc);
-
-        // Update map with route
-        map.getSource('gpx-route').setData(geojson);
-
-        // Fit map to route bounds
-        const bounds = new maplibregl.LngLatBounds();
-        geojson.features.forEach(feature => {
-            if (feature.geometry.type === 'LineString') {
-                feature.geometry.coordinates.forEach(coord => {
-                    bounds.extend(coord);
+                geojson.features.forEach(feature => {
+                    if (feature.geometry && feature.geometry.coordinates) {
+                        // LineString
+                        if (feature.geometry.type === 'LineString') {
+                            hasFeatures = true;
+                            feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
+                        }
+                        // MultiLineString
+                        else if (feature.geometry.type === 'MultiLineString') {
+                            hasFeatures = true;
+                            feature.geometry.coordinates.forEach(line => {
+                                line.forEach(coord => bounds.extend(coord));
+                            });
+                        }
+                    }
                 });
+
+                if (hasFeatures) {
+                    const is3D = terrainToggle.checked;
+                    map.fitBounds(bounds, {
+                        padding: is3D ? 200 : 50,
+                        maxZoom: is3D ? 12.5 : 15
+                    });
+                }
+
+            } catch (err) {
+                console.error('Error parsing GPX:', err);
+                alert('Invalid GPX file.');
             }
+        };
+        reader.readAsText(file);
+    });
+
+    clearBtn.addEventListener('click', () => {
+        // Clear map source
+        map.getSource('gpx-route').setData({
+            type: 'FeatureCollection',
+            features: []
         });
 
-        map.fitBounds(bounds, { padding: 50, duration: 1000 });
-
-        // Update active state
-        document.querySelectorAll('.gpx-item').forEach(item => {
-            item.classList.toggle('active', item.dataset.file === filename);
-        });
-
-        currentRouteName = filename;
-    } catch (error) {
-        console.error('Error loading GPX route:', error);
-        alert('Failed to load route: ' + filename);
-    }
+        // Reset UI
+        fileInput.value = ''; // allow re-uploading same file
+        statusDiv.style.display = 'none';
+        uploadLabel.style.display = 'inline-block';
+    });
 }
 
 // Drawer Controls logic
