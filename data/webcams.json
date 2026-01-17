@@ -53,21 +53,21 @@
         "title": "Bad Hindelang/Oberjoch",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/deutschland/bayern/bad-hindelang-oberjoch",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/3051.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.de/bad-hindelang-oberjoch/webcams/c3051/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3051&2&format=12",
         "lat": 47.517702,
         "lon": 10.394094,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Weiherkopf Bolsterlang",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/deutschland/bayern/bolsterlang-i-weiherkopf-bergstation",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/3236.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.de/bolsterlang/webcams/c3236/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3236&2&format=12",
         "lat": 47.465261,
         "lon": 10.201382,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Grünten",
@@ -91,11 +91,11 @@
         "title": "Kleinwalsertal - Kanzelwand",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/oesterreich/vorarlberg/riezlern-kleinwalsertal-kanzelwand-fellhorn",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/3056.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.de/kleinwalsertal-kanzelwand-fellhorn/webcams/c3056/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3056&2&format=12",
         "lat": 47.335709,
         "lon": 10.206049,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Ifen",
@@ -110,31 +110,31 @@
         "title": "Walmendingerhorn",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/oesterreich/vorarlberg/mittelberg-walmendingerhorn",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/3050.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.de/kleinwalsertal-walmendingerhorn/webcams/c3050/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3050&2&format=12",
         "lat": 47.325423,
         "lon": 10.117945,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Zöblen - Obere Halde",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/oesterreich/tirol/zoeblen-obere-halde",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/5716.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.at/zoeblen/webcams/c5716/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=5716&2&format=12",
         "lat": 47.513952,
         "lon": 10.475822,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Oberstdorf Fellhorn",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/deutschland/bayern/oberstdorf-fellhorn-oberstdorf-kleinwalsertal",
-        "imageUrl": "https://stsfc001.feratel.com/streams/latest/1/3002.jpg?dcsdesign=WTP_feratel.com",
+        "linkUrl": "https://www.bergfex.de/oberstdorf-fellhorn/webcams/c3002/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3002&2&format=12",
         "lat": 47.348098,
         "lon": 10.216258,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Neunerköpfle",
@@ -158,11 +158,11 @@
         "title": "Oberstdorf - Möserbahn Berg",
         "location": "Allgäu",
         "type": "live",
-        "linkUrl": "https://www.feratel.com/webcams/deutschland/bayern/oberstdorf-moeserbahn-berg",
-        "imageUrl": "https://sts202.feratel.co.at/streams/stsstore202/1/03057_696a6127-1e8aVid.jpg?dcsdesign=WTP_skiresort.de",
+        "linkUrl": "https://www.bergfex.de/oberstdorf-fellhorn/webcams/c3057/",
+        "imageUrl": "https://images.bergfex.at/webcams/?id=3057&2&format=12",
         "lat": 47.34502,
         "lon": 10.213019,
-        "provider": "Feratel"
+        "provider": "Bergfex"
     },
     {
         "title": "Nebelhorn Gipfel",

@@ -1053,7 +1053,7 @@ function generateUploadPage() {
 }
 
 /**
- * Generate Webcams Page
+ * Generate Webcams Page (simplified - no thumbnails)
  */
 function generateWebcamPage(webcams) {
     return `<!DOCTYPE html>
@@ -1065,24 +1065,44 @@ function generateWebcamPage(webcams) {
     <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        .webcam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: transform 0.2s; display:flex; flex-direction:column; position: relative; text-decoration: none; color: inherit; }
-        .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        
-        /* Unified Styles */
-        .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #3b82f6; }
-        
-        .webcam-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #f1f5f9; }
-        
-        .badge { position: absolute; top: 8px; right: 8px; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: white; background: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        
-        .meta-info { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
-        .play-overlay { position: absolute; top: 0; left: 0; right: 0; height: 180px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; background: rgba(0,0,0,0.2); }
-        .webcam-card:hover .play-overlay { opacity: 1; }
-        .play-icon { font-size: 3rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .webcam-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 0.75rem; 
+            margin-top: 1rem; 
+        }
+        .webcam-card { 
+            display: block;
+            background: white; 
+            border-radius: 6px; 
+            padding: 0.875rem 1rem; 
+            text-decoration: none; 
+            color: #1e293b; 
+            transition: all 0.2s; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+            border: 1px solid #e2e8f0;
+        }
+        .webcam-card:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 2px 8px rgba(2,132,199,0.15); 
+            border-color: #0284c7;
+            color: #0284c7;
+        }
+        .webcam-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+        }
 
         /* Custom Leaflet Marker Styles */
-        .custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); background: #3b82f6; }
+        .custom-marker { 
+            width: 16px; 
+            height: 16px; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+            background: #3b82f6; 
+        }
     </style>
 </head>
 <body>
@@ -1093,16 +1113,12 @@ function generateWebcamPage(webcams) {
                 <div class="date-nav"><span>Webcams</span></div>
             </div>
         </header>
-         <div style="margin-bottom:1rem;"><a href="../ground-conditions/index.html">&larr; Back to Ground Conditions</a></div>
+        <div style="margin-bottom:1rem;"><a href="../ground-conditions/index.html">&larr; Back to Ground Conditions</a></div>
 
         <h1>Allgäu Webcams</h1>
 
-        <!-- Map show webcam locations -->
-
-        <!-- Map show webcam locations -->
         <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem; border:1px solid #e2e8f0;"></div>
 
-        
         ${(() => {
             // Group Definitions
             const groups = {
@@ -1142,19 +1158,9 @@ function generateWebcamPage(webcams) {
                 if (cams.length === 0) return '';
 
                 const gridHtml = cams.map(cam => {
-                    const badge = '<span class="badge">LIVE</span>';
                     return `
                         <a href="${cam.linkUrl}" target="_blank" class="webcam-card">
-                            ${badge}
-                            <div style="position:relative;">
-                                <img src="${cam.imageUrl}${cam.imageUrl.includes('?') ? '&' : '?'}t=${Date.now()}" class="webcam-img" loading="lazy" alt="${cam.title}">
-                                <div class="play-overlay"><span class="play-icon">▶</span></div>
-                            </div>
-                            <div style="padding:1rem;">
-                                <h3 style="margin:0; font-size:1rem; font-weight:600;">${cam.title}</h3>
-                                <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">${cam.location}</p>
-                                <p class="meta-info">Webcam</p>
-                            </div>
+                            <h3 class="webcam-title">${cam.title}</h3>
                         </a>`;
                 }).join('');
 
@@ -1175,15 +1181,13 @@ function generateWebcamPage(webcams) {
 
              webcams.forEach(cam => {
                  if(cam.lat && cam.lon) {
-                     // Custom colored marker
-                    const icon = L.divIcon({
+                     const icon = L.divIcon({
                         className: 'custom-marker',
                         iconSize: [16, 16],
                         iconAnchor: [8, 8],
                         popupAnchor: [0, -10]
                     });
 
-                    // No image in popup, just title and link
                     const popupContent = \`
                         <div style="text-align:center;">
                             <b>\${cam.title}</b><br>
