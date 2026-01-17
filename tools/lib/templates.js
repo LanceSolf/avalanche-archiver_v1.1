@@ -1069,38 +1069,20 @@ function generateWebcamPage(webcams) {
         .webcam-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: transform 0.2s; display:flex; flex-direction:column; position: relative; text-decoration: none; color: inherit; }
         .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
-        /* Hover Border Colors */
-        .webcam-card-live:hover { border-color: #ef4444; }
-        .webcam-card-static:hover { border-color: #3b82f6; }
-
+        /* Unified Styles */
+        .webcam-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #3b82f6; }
+        
         .webcam-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #f1f5f9; }
         
-        .badge { position: absolute; top: 8px; right: 8px; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .badge-live { background: #ef4444; animation: pulse 2s infinite; }
-        .badge-static { background: #3b82f6; }
+        .badge { position: absolute; top: 8px; right: 8px; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: white; background: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
         .meta-info { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
         .play-overlay { position: absolute; top: 0; left: 0; right: 0; height: 180px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; background: rgba(0,0,0,0.2); }
         .webcam-card:hover .play-overlay { opacity: 1; }
         .play-icon { font-size: 3rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-        /* Map Legend & Markers */
-        .map-legend { display: flex; gap: 1.5rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: inline-flex; align-items: center; }
-        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #475569; font-weight: 500; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .dot-live { background: #ef4444; border: 2px solid rgba(239, 68, 68, 0.3); }
-        .dot-static { background: #3b82f6; border: 2px solid rgba(59, 130, 246, 0.3); }
-
         /* Custom Leaflet Marker Styles */
-        .custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .marker-live { background: #ef4444; }
-        .marker-static { background: #3b82f6; }
+        .custom-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); background: #3b82f6; }
     </style>
 </head>
 <body>
@@ -1115,34 +1097,26 @@ function generateWebcamPage(webcams) {
 
         <h1>Allgäu Webcams</h1>
 
-        <!-- Map Legend -->
-        <div class="map-legend">
-            <span style="font-weight:600; color:#1e293b; margin-right:0.5rem;">Map Key:</span>
-            <div class="legend-item"><span class="dot dot-live"></span> Live Stream</div>
-            <div class="legend-item"><span class="dot dot-static"></span> Static Image</div>
-        </div>
+        <!-- Map show webcam locations -->
 
         <!-- Map show webcam locations -->
         <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 2rem; border:1px solid #e2e8f0;"></div>
 
         <div class="webcam-grid">
             ${webcams.map(cam => {
-        const isLive = cam.type === 'live';
-        const badge = isLive ? '<span class="badge badge-live">● LIVE</span>' : '<span class="badge badge-static">📷 IMAGE</span>';
-        const meta = isLive ? 'Live Stream' : `Updated: ${cam.updateInterval || 'Daily'}`;
-        const cardClass = isLive ? 'webcam-card-live' : 'webcam-card-static';
+        const badge = '<span class="badge">LIVE</span>';
 
         return `
-            <a href="${cam.linkUrl}" target="_blank" class="webcam-card ${cardClass}">
+            <a href="${cam.linkUrl}" target="_blank" class="webcam-card">
                 ${badge}
                 <div style="position:relative;">
                     <img src="${cam.imageUrl}" class="webcam-img" loading="lazy" alt="${cam.title}">
-                    ${isLive ? '<div class="play-overlay"><span class="play-icon">▶</span></div>' : ''}
+                    <div class="play-overlay"><span class="play-icon">▶</span></div>
                 </div>
                 <div style="padding:1rem;">
                     <h3 style="margin:0; font-size:1rem; font-weight:600;">${cam.title}</h3>
                     <p style="margin:0.25rem 0 0; color:#475569; font-size:0.9rem;">${cam.location}</p>
-                    <p class="meta-info">${meta}</p>
+                    <p class="meta-info">Webcam</p>
                 </div>
             </a>`;
     }).join('')}
@@ -1156,10 +1130,9 @@ function generateWebcamPage(webcams) {
 
              webcams.forEach(cam => {
                  if(cam.lat && cam.lon) {
-                    const isLive = cam.type === 'live';
-                    // Custom colored marker
+                     // Custom colored marker
                     const icon = L.divIcon({
-                        className: 'custom-marker ' + (isLive ? 'marker-live' : 'marker-static'),
+                        className: 'custom-marker',
                         iconSize: [16, 16],
                         iconAnchor: [8, 8],
                         popupAnchor: [0, -10]
@@ -1169,7 +1142,6 @@ function generateWebcamPage(webcams) {
                     const popupContent = \`
                         <div style="text-align:center;">
                             <b>\${cam.title}</b><br>
-                            <span style="font-size:0.85rem; color:#64748b;">\${isLive ? 'Live Stream' : 'Static Image'}</span><br>
                             <a href="\${cam.linkUrl}" target="_blank" style="color:#0284c7; font-weight:600; text-decoration:none; display:block; margin-top:4px;">View Feed &rarr;</a>
                         </div>
                     \`;

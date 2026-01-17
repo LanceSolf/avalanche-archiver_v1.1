@@ -7,7 +7,7 @@
 | **`tools/`** | **SOURCE CODE**. Contains all logic, scripts, and **templates**. | **EDIT HERE**. If you want to change the HTML structure, CSS classes, or logic, you MUST edit files in `tools/`. |
 | **`workers/`** | **SERVERLESS**. Cloudflare Worker scripts. | **DEPLOY**. Changes here interact with `wrangler deploy`. |
 | **`archive/`** | **BUILD OUTPUT**. Generated static HTML files for the website. | **READ-ONLY**. Do NOT edit these files directly. Your changes will be overwritten by the build script. |
-| **`data/`** | **RAW DATA**. JSON files, cache, and raw incident images. | **READ-ONLY**. Generally managed by fetch scripts. |
+| **`data/`** | **RAW DATA**. JSON files (including `webcams.json`), cache, and raw incident images. | **READ-ONLY**. Generally managed by fetch scripts. |
 | **`snow-depth/`**| **Module**. Specific component for snow depth visualization. | Contains its own `index.html` source which is copied to `archive/` during build. |
 
 ## 🏗️ The Build Pipeline
@@ -22,7 +22,7 @@ The site is static, generated from raw data.
 3.  **Build**: `node tools/build.js` is the master conductor.
     *   It reads `data/`.
     *   It loads templates from **`tools/lib/templates.js`**.
-    *   It **generates** HTML files (incidents, profiles, **ground conditions**) and writes them to `archive/`.
+    *   It **generates** HTML files (incidents, profiles, **ground conditions**, **webcams**) and writes them to `archive/`.
 
 ## ☁️ Cloud & Dynamic Features
 *   **User Uploads**:
@@ -32,8 +32,9 @@ The site is static, generated from raw data.
 
 ## 🔑 Key Files "Cheatsheet"
 
-*   **`tools/lib/templates.js`**: **THE UI SOURCE**. All HTML for incidents, weather, profiles, and **ground conditions** is generated here. **If the user asks for a UI change, check this file first.**
+*   **`tools/lib/templates.js`**: **THE UI SOURCE**. All HTML for incidents, weather, profiles, **webcams**, and **ground conditions** is generated here. **If the user asks for a UI change, check this file first.**
 *   **`tools/build.js`**: The main build orchestrator.
+*   **`tools/lib/builders/buildGroundConditions.js`**: Builds the combined Ground Conditions & Webcam pages.
 *   **`workers/upload-worker.js`**: The API logic for handling skier uploads.
 *   **`tools/fetch_uploads.js`**: Sync script for user uploads.
 *   **`tools/lib/builders/*.js`**: Specific logic for building different sections.
