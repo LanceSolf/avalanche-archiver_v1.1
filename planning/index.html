@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Tool - Avalanche Archive</title>
+    <link rel="stylesheet" href="../styles.css">
+    <!-- MapLibre GL JS -->
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <!-- ToGeoJSON for GPX parsing -->
+    <script src="https://unpkg.com/@mapbox/togeojson@5.8.1/togeojson.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            max-width: 320px;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-panel h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-section h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .layer-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .layer-control:hover {
+            background: var(--bg-color);
+        }
+
+        .layer-control label {
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #0284c7;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .opacity-control {
+            margin-top: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .opacity-control input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .opacity-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+        }
+
+        .opacity-control input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            border: none;
+        }
+
+        .opacity-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* GPX Route List */
+        .gpx-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .gpx-item {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .gpx-item:last-child {
+            border-bottom: none;
+        }
+
+        .gpx-item:hover {
+            background: var(--bg-color);
+        }
+
+        .gpx-item.active {
+            background: #e0f2fe;
+            color: #0284c7;
+            font-weight: 600;
+        }
+
+        .no-routes {
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Header Navigation */
+        .map-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--primary-blue);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        /* Terrain Controls */
+        .terrain-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .terrain-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .terrain-btn:hover {
+            background: var(--bg-color);
+            border-color: #0284c7;
+        }
+
+        .terrain-btn.active {
+            background: #0284c7;
+            color: white;
+            border-color: #0284c7;
+        }
+
+        /* Attribution */
+        .maplibregl-ctrl-attrib {
+            background: rgba(255, 255, 255, 0.9) !important;
+            font-size: 10px !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .control-panel {
+                top: auto;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                max-width: 100%;
+                border-radius: 12px 12px 0 0;
+                max-height: 50vh;
+            }
+
+            .map-header {
+                top: 10px;
+                left: 10px;
+            }
+
+            .back-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="map-header">
+        <a href="../index.html" class="back-button">
+            ← Back to Archive
+        </a>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <h2>🗺️ Planning Tool</h2>
+
+        <!-- Base Map Info -->
+        <div class="control-section">
+            <h3>Base Map</h3>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">OpenTopoMap</p>
+        </div>
+
+        <!-- Overlay Layers -->
+        <div class="control-section">
+            <h3>Overlay Layers</h3>
+
+            <!-- Hillshade -->
+            <div class="layer-control">
+                <label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="hillshade-toggle">
+                        <span class="slider"></span>
+                    </div>
+                    Hillshade
+                </label>
+            </div>
+            <div class="opacity-control" id="hillshade-opacity-container" style="display: none;">
+                <input type="range" id="hillshade-opacity" min="0" max="100" value="60">
+                <div class="opacity-label">Opacity: <span id="hillshade-opacity-value">60</span>%</div>
+            </div>
+
+            <!-- Slope -->
+            <div class="layer-control">
+                <label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="slope-toggle">
+                        <span class="slider"></span>
+                    </div>
+                    Slope Angle
+                </label>
+            </div>
+            <div class="opacity-control" id="slope-opacity-container" style="display: none;">
+                <input type="range" id="slope-opacity" min="0" max="100" value="50">
+                <div class="opacity-label">Opacity: <span id="slope-opacity-value">50</span>%</div>
+            </div>
+
+            <!-- Satellite -->
+            <div class="layer-control">
+                <label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="satellite-toggle">
+                        <span class="slider"></span>
+                    </div>
+                    Satellite Imagery
+                </label>
+            </div>
+            <div class="opacity-control" id="satellite-opacity-container" style="display: none;">
+                <input type="range" id="satellite-opacity" min="0" max="100" value="50">
+                <div class="opacity-label">Opacity: <span id="satellite-opacity-value">50</span>%</div>
+            </div>
+        </div>
+
+        <!-- 3D Terrain -->
+        <div class="control-section">
+            <h3>3D Terrain</h3>
+            <div class="layer-control">
+                <label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="terrain-toggle">
+                        <span class="slider"></span>
+                    </div>
+                    Enable 3D
+                </label>
+            </div>
+            <div class="terrain-controls" id="terrain-controls" style="display: none;">
+                <button class="terrain-btn" id="tilt-btn">Tilt View</button>
+                <button class="terrain-btn" id="reset-btn">Reset</button>
+            </div>
+        </div>
+
+        <!-- GPX Routes -->
+        <div class="control-section">
+            <h3>GPX Routes</h3>
+            <div class="gpx-list" id="gpx-list">
+                <div class="no-routes">Loading routes...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map centered on Allgäu Alps
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: {
+                version: 8,
+                sources: {
+                    'opentopo': {
+                        type: 'raster',
+                        tiles: [
+                            'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+                            'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
+                            'https://c.tile.opentopomap.org/{z}/{x}/{y}.png'
+                        ],
+                        tileSize: 256,
+                        attribution: 'Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+                    }
+                },
+                layers: [
+                    {
+                        id: 'opentopo',
+                        type: 'raster',
+                        source: 'opentopo',
+                        minzoom: 0,
+                        maxzoom: 22
+                    }
+                ]
+            },
+            center: [10.2, 47.4], // Allgäu Alps region
+            zoom: 10,
+            pitch: 0,
+            bearing: 0
+        });
+
+        // Add navigation controls
+        map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+        map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
+
+        let currentRouteName = null;
+
+        // Initialize overlay layers when map loads
+        map.on('load', () => {
+            // Add Hillshade layer
+            map.addSource('hillshade', {
+                type: 'raster',
+                tiles: [
+                    'https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
+                ],
+                tileSize: 256,
+                attribution: 'Hillshading: WMFLABS'
+            });
+
+            map.addLayer({
+                id: 'hillshade-layer',
+                type: 'raster',
+                source: 'hillshade',
+                layout: { visibility: 'none' },
+                paint: { 'raster-opacity': 0.6 }
+            });
+
+            // Add Slope layer (using hillshade as approximation)
+            map.addSource('slope', {
+                type: 'raster',
+                tiles: [
+                    'https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
+                ],
+                tileSize: 256,
+                attribution: 'Slope approximation: WMFLABS'
+            });
+
+            map.addLayer({
+                id: 'slope-layer',
+                type: 'raster',
+                source: 'slope',
+                layout: { visibility: 'none' },
+                paint: {
+                    'raster-opacity': 0.5,
+                    'raster-hue-rotate': 180
+                }
+            });
+
+            // Add Satellite layer (Sentinel-2)
+            map.addSource('satellite', {
+                type: 'raster',
+                tiles: [
+                    'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg'
+                ],
+                tileSize: 256,
+                attribution: 'Sentinel-2 cloudless - <a href="https://s2maps.eu">https://s2maps.eu</a> by <a href="https://eox.at">EOX IT Services GmbH</a>'
+            });
+
+            map.addLayer({
+                id: 'satellite-layer',
+                type: 'raster',
+                source: 'satellite',
+                layout: { visibility: 'none' },
+                paint: { 'raster-opacity': 0.5 }
+            }, 'hillshade-layer'); // Add below hillshade
+
+            // Add terrain source for 3D
+            map.addSource('terrarium', {
+                type: 'raster-dem',
+                tiles: [
+                    'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+                ],
+                encoding: 'terrarium',
+                tileSize: 256,
+                attribution: 'Terrain tiles by <a href="https://github.com/tilezen/joerd">Mapzen Joerd</a>'
+            });
+
+            // Add source for GPX routes
+            map.addSource('gpx-route', {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                }
+            });
+
+            map.addLayer({
+                id: 'gpx-route-layer',
+                type: 'line',
+                source: 'gpx-route',
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                paint: {
+                    'line-color': '#dc2626',
+                    'line-width': 4,
+                    'line-opacity': 0.8
+                }
+            });
+
+            // Load GPX files
+            loadGPXFiles();
+        });
+
+        // Layer Controls
+        const layers = [
+            { id: 'hillshade', toggle: 'hillshade-toggle', opacity: 'hillshade-opacity', opacityValue: 'hillshade-opacity-value', container: 'hillshade-opacity-container' },
+            { id: 'slope', toggle: 'slope-toggle', opacity: 'slope-opacity', opacityValue: 'slope-opacity-value', container: 'slope-opacity-container' },
+            { id: 'satellite', toggle: 'satellite-toggle', opacity: 'satellite-opacity', opacityValue: 'satellite-opacity-value', container: 'satellite-opacity-container' }
+        ];
+
+        layers.forEach(layer => {
+            const toggle = document.getElementById(layer.toggle);
+            const opacitySlider = document.getElementById(layer.opacity);
+            const opacityValue = document.getElementById(layer.opacityValue);
+            const opacityContainer = document.getElementById(layer.container);
+
+            toggle.addEventListener('change', (e) => {
+                const visibility = e.target.checked ? 'visible' : 'none';
+                map.setLayoutProperty(`${layer.id}-layer`, 'visibility', visibility);
+                opacityContainer.style.display = e.target.checked ? 'block' : 'none';
+            });
+
+            opacitySlider.addEventListener('input', (e) => {
+                const opacity = e.target.value / 100;
+                map.setPaintProperty(`${layer.id}-layer`, 'raster-opacity', opacity);
+                opacityValue.textContent = e.target.value;
+            });
+        });
+
+        // 3D Terrain Controls
+        const terrainToggle = document.getElementById('terrain-toggle');
+        const terrainControls = document.getElementById('terrain-controls');
+        const tiltBtn = document.getElementById('tilt-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        terrainToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                map.setTerrain({ source: 'terrarium', exaggeration: 1.5 });
+                terrainControls.style.display = 'flex';
+            } else {
+                map.setTerrain(null);
+                terrainControls.style.display = 'none';
+            }
+        });
+
+        tiltBtn.addEventListener('click', () => {
+            map.easeTo({ pitch: 60, duration: 1000 });
+            tiltBtn.classList.add('active');
+        });
+
+        resetBtn.addEventListener('click', () => {
+            map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
+            tiltBtn.classList.remove('active');
+        });
+
+        // GPX Loading Functions
+        async function loadGPXFiles() {
+            try {
+                const response = await fetch('../gpx/');
+                const html = await response.text();
+                
+                // Parse HTML to find .gpx files
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const links = Array.from(doc.querySelectorAll('a')).filter(a => a.href.endsWith('.gpx'));
+                
+                const gpxFiles = links.map(a => {
+                    const url = new URL(a.href);
+                    return url.pathname.split('/').pop();
+                });
+
+                displayGPXList(gpxFiles);
+            } catch (error) {
+                console.error('Error loading GPX files:', error);
+                // Fallback: try to load a known GPX file list or show empty state
+                displayGPXList([]);
+            }
+        }
+
+        function displayGPXList(files) {
+            const gpxList = document.getElementById('gpx-list');
+            
+            if (files.length === 0) {
+                gpxList.innerHTML = '<div class="no-routes">No GPX routes found. Add .gpx files to /gpx/ folder.</div>';
+                return;
+            }
+
+            gpxList.innerHTML = '';
+            files.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'gpx-item';
+                item.textContent = file.replace('.gpx', '');
+                item.dataset.file = file;
+                item.addEventListener('click', () => loadGPXRoute(file));
+                gpxList.appendChild(item);
+            });
+        }
+
+        async function loadGPXRoute(filename) {
+            try {
+                const response = await fetch(`../gpx/${filename}`);
+                const gpxText = await response.text();
+                
+                // Parse GPX to GeoJSON
+                const parser = new DOMParser();
+                const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
+                const geojson = toGeoJSON.gpx(gpxDoc);
+
+                // Update map with route
+                map.getSource('gpx-route').setData(geojson);
+
+                // Fit map to route bounds
+                const bounds = new maplibregl.LngLatBounds();
+                geojson.features.forEach(feature => {
+                    if (feature.geometry.type === 'LineString') {
+                        feature.geometry.coordinates.forEach(coord => {
+                            bounds.extend(coord);
+                        });
+                    }
+                });
+
+                map.fitBounds(bounds, { padding: 50, duration: 1000 });
+
+                // Update active state
+                document.querySelectorAll('.gpx-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.file === filename);
+                });
+
+                currentRouteName = filename;
+            } catch (error) {
+                console.error('Error loading GPX route:', error);
+                alert('Failed to load route: ' + filename);
+            }
+        }
+    </script>
+</body>
+
+</html>
