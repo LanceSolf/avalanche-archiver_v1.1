@@ -9,6 +9,7 @@
 | **`archive/`** | **BUILD OUTPUT**. Generated static HTML files for the website. | **READ-ONLY**. Do NOT edit these files directly. Your changes will be overwritten by the build script. |
 | **`data/`** | **RAW DATA**. JSON files (including `webcams.json`), cache, and raw incident images. | **READ-ONLY**. Generally managed by fetch scripts. |
 | **`snow-depth/`**| **Module**. Specific component for snow depth visualization. | Contains its own `index.html` source which is copied to `archive/` during build. |
+| **`planning/`** | **Module**. Interactive Map & Route Planning tool. | Contains `index.html`, CSS, and JS. Served from root during dev. |
 
 ## 🏗️ The Build Pipeline
 The site is static, generated from raw data.

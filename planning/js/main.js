@@ -38,7 +38,7 @@ const map = new maplibregl.Map({
 // Add standard scale control
 map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
 
-let currentRouteName = null;
+
 
 // Initialize overlay layers when map loads
 map.on('load', () => {

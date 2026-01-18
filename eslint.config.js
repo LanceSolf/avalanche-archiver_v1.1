@@ -4,7 +4,7 @@ const globals = require("globals");
 module.exports = [
     js.configs.recommended,
     {
-        files: ["tools/**/*.js", "snow-depth/**/*.js"],
+        files: ["tools/**/*.js", "snow-depth/**/*.js", "planning/**/*.js"],
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: "commonjs",
