@@ -745,6 +745,7 @@ input:checked+.slider:before {
 }
 
 .compass-wrapper {
+    position: relative;
     transition: transform 0.1s;
     display: flex;
     align-items: center;
@@ -753,6 +754,19 @@ input:checked+.slider:before {
     font-size: 0.9rem;
     color: #ef4444;
     /* Red N */
+}
+
+.compass-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 5px solid #ef4444;
 }
 
 /* Legend */
