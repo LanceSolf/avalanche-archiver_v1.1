@@ -241,8 +241,8 @@ function buildProfilePages() {
     }).join('')}
             
             <div class="station-card" style="border: 2px dashed #bae6fd; background: #f0f9ff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-                 <div style="font-size:3rem; margin-bottom:1rem;">🇦🇹</div>
-                 <h2 class="station-name" style="margin-bottom:0.5rem;">See All Profiles</h2>
+                 <a href="../../profile-creator/index.html" class="source-link" style="font-size:1.1rem; margin-bottom:1rem;">Upload your own profile &rarr;</a>
+                 <div style="height: 1px; width: 100%; background: #e5e7eb; margin-bottom: 1rem;"></div>
                  <p style="color:#666; margin-bottom:1rem;">View full database on Lawis.at</p>
                  <a href="https://lawis.at/profile/" target="_blank" class="source-link" style="font-size:1.1rem;">Go to Lawis &rarr;</a>
             </div>
