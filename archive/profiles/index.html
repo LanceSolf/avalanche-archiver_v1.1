@@ -1,168 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Latest Snow Profiles</title>
     <link rel="stylesheet" href="../../styles.css">
     <style>
-        .profile-list {
-            display: grid;
-            gap: 2rem;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            margin-top: 2rem;
-        }
-
-        .station-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-        }
-
-        .station-header {
-            border-bottom: 2px solid #3b82f6;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .station-name {
-            font-size: 1.1rem;
-            margin: 0;
-            color: #1e40af;
-            font-weight: 700;
-        }
-
-        .latest-update {
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .data-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .data-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #6b7280;
-            font-weight: 600;
-        }
-
-        .data-value {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .source-link {
-            color: #ef4444;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .source-link:hover {
-            text-decoration: underline;
-        }
-
-        .map-container {
-            width: 100%;
-            height: 500px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-        }
-
-        .stability-tag {
-            display: inline-block;
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-right: 4px;
-            margin-bottom: 4px;
-            border: 1px solid #fca5a5;
-        }
+        .profile-list { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top:2rem; }
+        .station-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
+        .station-header { border-bottom: 2px solid #3b82f6; margin-bottom: 1rem; padding-bottom: 0.5rem; display:flex; justify-content:space-between; align-items:center; }
+        .station-name { font-size: 1.1rem; margin:0; color: #1e40af; font-weight:700; }
+        .latest-update { font-size: 0.85rem; color: #6b7280; }
+        .data-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        .data-item { display:flex; flex-direction:column; }
+        .data-label { font-size: 0.75rem; text-transform:uppercase; color: #6b7280; font-weight:600; }
+        .data-value { font-weight: 600; font-size: 0.95rem; }
+        .source-link { color: #ef4444; font-weight: bold; text-decoration: none; font-size:0.9rem;}
+        .source-link:hover { text-decoration: underline; }
+        .map-container { width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        .stability-tag { display: inline-block; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-right: 4px; margin-bottom: 4px; border:1px solid #fca5a5; }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <header>
-            <div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a>
-                <div class="date-nav"><span>Snow Profiles</span></div>
-            </div>
-        </header>
-
+        <header><div class="header-content"><a href="../../index.html" class="logo">Avalanche Archive</a><div class="date-nav"><span>Snow Profiles</span></div></div></header>
+        
         <h1>Latest Snow Profiles (Last 48 Hours)</h1>
 
         <!-- Requested Back Link -->
         <div style="margin-bottom: 1rem;"><a href="../../index.html">&larr; Back</a></div>
 
         <div class="map-container">
-            <iframe src="map.html" width="100%" height="100%" style="border:none;"></iframe>
+             <iframe src="map.html" width="100%" height="100%" style="border:none;"></iframe>
         </div>
 
         <div style="margin-top: 1rem; margin-bottom: 0rem;"><a href="../../index.html">&larr; Back</a></div>
 
         <div class="profile-list">
-
+            
             <div class="station-card">
                 <div class="station-header">
-                    <h2 class="station-name"><a href="24558.html"
-                            style="color:inherit; text-decoration:none;">Hornbachjoch</a></h2>
+                    <h2 class="station-name"><a href="24558.html" style="color:inherit; text-decoration:none;">Hornbachjoch</a></h2>
                     <span class="latest-update">2026-01-18 12:00:00</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Elev</span><span class="data-value">1934 m</span>
-                    </div>
-                    <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">NE</span>
-                    </div>
-                    <div class="data-item"><span class="data-label">Slope</span><span class="data-value">31°</span>
-                    </div>
-                    <div class="data-item"><span class="data-label">HS</span><span class="data-value">-</span></div>
+                   <div class="data-item"><span class="data-label">Elev</span><span class="data-value">1934 m</span></div>
+                   <div class="data-item"><span class="data-label">Aspect</span><span class="data-value">NE</span></div>
+                   <div class="data-item"><span class="data-label">Slope</span><span class="data-value">31°</span></div>
+                   <div class="data-item"><span class="data-label">HS</span><span class="data-value">-</span></div>
                 </div>
                 <div style="margin-bottom:0.75rem;">
-                    <span class="stability-tag" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;">ECT
-                        31</span>
+                    <span class="stability-tag" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;">ECT 31</span>
                 </div>
-                <div
-                    style="font-size:0.85rem; color:#4b5563; background:#f9fafb; padding:8px; border-radius:6px; margin-bottom:1rem; border:1px solid #f3f4f6;">
+                <div style="font-size:0.85rem; color:#4b5563; background:#f9fafb; padding:8px; border-radius:6px; margin-bottom:1rem; border:1px solid #f3f4f6;">
                     <strong>Comments:</strong><br>ECT 31: no fracture
                 </div>
                 <a href="24558.html" class="source-link">View Detail &rarr;</a>
             </div>
-
-            <div class="station-card"
-                style="border: 2px dashed #bae6fd; background: #f0f9ff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-                <a href="../../profile-creator/index.html" class="source-link"
-                    style="font-size:1.1rem; margin-bottom:1rem; color:#0284c7;">Upload your own profile &rarr;</a>
-                <div style="height: 1px; width: 100%; background: #e5e7eb; margin-bottom: 1rem;"></div>
-                <p style="color:#666; margin-bottom:1rem;">View full database on Lawis.at</p>
-                <a href="https://lawis.at/profile/" target="_blank" class="source-link" style="font-size:1.1rem;">Go to
-                    Lawis &rarr;</a>
+            
+            <div class="station-card" style="border: 2px dashed #bae6fd; background: #f0f9ff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                 <a href="../../profile-creator/index.html" class="source-link" style="font-size:1.1rem; margin-bottom:1rem;">Upload your own profile &rarr;</a>
+                 <div style="height: 1px; width: 100%; background: #e5e7eb; margin-bottom: 1rem;"></div>
+                 <p style="color:#666; margin-bottom:1rem;">View full database on Lawis.at</p>
+                 <a href="https://lawis.at/profile/" target="_blank" class="source-link" style="font-size:1.1rem;">Go to Lawis &rarr;</a>
             </div>
         </div>
-
+        
         <div style="margin-top:2rem"><a href="../../index.html">&larr; Back</a></div>
     </div>
 </body>
-
 </html>
