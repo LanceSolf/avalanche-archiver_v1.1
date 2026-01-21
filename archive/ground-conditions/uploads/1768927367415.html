@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report by Ian Loombe</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <a href="../../../index.html" class="logo">Avalanche Archive</a>
+                <div class="date-nav"><span>Report Detail</span></div>
+            </div>
+        </header>
+        <div style="margin-bottom:1rem;"><a href="../index.html">&larr; Back to Ground Conditions</a></div>
+
+        <h1>Skier Report</h1>
+        <div style="background:white; padding:2rem; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid #eee; padding-bottom:1rem;">
+                <div>
+                   <h2 style="margin:0; color:#0f172a;">Ian Loombe</h2>
+                   <div style="color:#64748b; margin-top:0.25rem;">1/20/2026 4:42:47 PM</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:2rem;">
+                
+            </div>
+
+            <p style="font-size:1.1rem; line-height:1.7; color:#334155;">Test </p>
+
+            
+            <div style="margin-top:2rem;">
+                <h3>Location</h3>
+                <div id="map" style="height:200px; width:100%; max-width:400px; border-radius:8px; border:1px solid #cbd5e1;"></div>
+                <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+                <script>
+                    const map = L.map('map').setView([47.517213378200616, 10.275306701660158], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                    L.marker([47.517213378200616, 10.275306701660158]).addTo(map);
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
