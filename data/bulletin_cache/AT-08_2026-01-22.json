@@ -21,7 +21,7 @@
             "NW"
           ],
           "elevation": {
-            "lowerBound": "2200"
+            "lowerBound": "2400"
           },
           "validTimePeriod": "all_day"
         },
@@ -40,7 +40,7 @@
             "NW"
           ],
           "elevation": {
-            "upperBound": "2200"
+            "upperBound": "2400"
           },
           "validTimePeriod": "all_day"
         }
@@ -58,20 +58,20 @@
         {
           "mainValue": "moderate",
           "elevation": {
-            "upperBound": "2200"
+            "upperBound": "2400"
           },
           "validTimePeriod": "all_day"
         },
         {
           "mainValue": "considerable",
           "elevation": {
-            "lowerBound": "2200"
+            "lowerBound": "2400"
           },
           "validTimePeriod": "all_day"
         }
       ],
       "lang": "en",
-      "publicationTime": "2026-01-21T16:00:00+00:00",
+      "publicationTime": "2026-01-22T07:00:00+00:00",
       "regions": [
         {
           "regionID": "AT-08-05-01",
@@ -105,7 +105,7 @@
           }
         }
       ],
-      "unscheduled": false,
+      "unscheduled": true,
       "validTime": {
         "startTime": "2026-01-21T16:00:00+00:00",
         "endTime": "2026-01-22T16:00:00+00:00"
@@ -185,7 +185,7 @@
         }
       ],
       "lang": "en",
-      "publicationTime": "2026-01-21T16:00:00+00:00",
+      "publicationTime": "2026-01-22T07:00:00+00:00",
       "regions": [
         {
           "regionID": "AT-08-03-02",
@@ -219,7 +219,7 @@
           }
         }
       ],
-      "unscheduled": false,
+      "unscheduled": true,
       "validTime": {
         "startTime": "2026-01-21T16:00:00+00:00",
         "endTime": "2026-01-22T16:00:00+00:00"
@@ -280,7 +280,7 @@
         }
       ],
       "lang": "en",
-      "publicationTime": "2026-01-21T16:00:00+00:00",
+      "publicationTime": "2026-01-22T07:00:00+00:00",
       "regions": [
         {
           "regionID": "AT-08-01",
@@ -310,7 +310,7 @@
           }
         }
       ],
-      "unscheduled": false,
+      "unscheduled": true,
       "validTime": {
         "startTime": "2026-01-21T16:00:00+00:00",
         "endTime": "2026-01-22T16:00:00+00:00"
@@ -321,7 +321,7 @@
     },
     {
       "avalancheActivity": {
-        "comment": "Avalanche danger is low. Isolated danger zones are located on extremely steep shady slopes. Small-sized avalanches can, in isolated cases, be triggered even by minimum additional loading. Danger zones occur mostly in transitions from shallow to deep snow, for example, at the entry point into gullies and bowls. The risks of being swept along and forced to take a fall require caution.",
+        "comment": "Avalanche danger is low. Isolated danger zones are located on extremely steep shady slopes. Small-sized, in isolated cases medium-sized avalanches can be triggered even by minimum additional loading. Danger zones occur mostly in transitions from shallow to deep snow, for example, at the entry point into gullies and bowls. The risks of being swept along and forced to take a fall require caution.",
         "highlights": "Isolated avalanche prone locations on steep shady slopes"
       },
       "bulletinID": "8e379cf3-306b-447c-856f-cdce9c53a1ff",
@@ -340,7 +340,7 @@
         }
       ],
       "lang": "en",
-      "publicationTime": "2026-01-21T16:00:00+00:00",
+      "publicationTime": "2026-01-22T07:00:00+00:00",
       "regions": [
         {
           "regionID": "AT-08-07",
@@ -366,7 +366,7 @@
           }
         }
       ],
-      "unscheduled": false,
+      "unscheduled": true,
       "validTime": {
         "startTime": "2026-01-21T16:00:00+00:00",
         "endTime": "2026-01-22T16:00:00+00:00"
