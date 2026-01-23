@@ -96,9 +96,10 @@ graph TD
     - [Snow Depth](file:///c:/Users/User/Documents/GitHub/avalanche-archiver_v1-1/archive/snow-depth/CONTEXT.md) - 3D Map.
     - [Ground & Webcams](file:///c:/Users/User/Documents/GitHub/avalanche-archiver_v1-1/archive/ground-conditions/CONTEXT.md) - User uploads.
 
-### 🗺️ Planning Module (`planning/`)
-*Interactive Route Planner.*
-- [Planning Context](file:///c:/Users/User/Documents/GitHub/avalanche-archiver_v1-1/planning/CONTEXT.md) (To be created)
+### 🗺️ Planning & Tools
+*Interactive Modules.*
+- [Planning Context](file:///c:/Users/User/Documents/GitHub/avalanche-archiver_v1-1/planning/CONTEXT.md)
+- [GPX Library Context](file:///c:/Users/User/Documents/GitHub/avalanche-archiver_v1-1/gpx-library/CONTEXT.md) - Route Archive & Analysis.
 
 
 ### 🛠️ Tools & Logic (`tools/`)

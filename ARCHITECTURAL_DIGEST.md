@@ -10,6 +10,7 @@
 | **`data/`** | **RAW DATA**. JSON files (including `webcams.json`), cache, and raw incident images. | **READ-ONLY**. Generally managed by fetch scripts. |
 | **`snow-depth/`**| **Module**. Specific component for snow depth visualization. | Contains its own `index.html` source which is copied to `archive/` during build. |
 | **`planning/`** | **Module**. Interactive Map & Route Planning tool. | Contains `index.html`, CSS, and JS. Served from root during dev. |
+| **`gpx-library/`** | **Module**. GPX Route Archive & Analysis tool. | Hybrid SPA (Cloud + Static Fallback). |
 
 ## 🏗️ The Build Pipeline
 The site is static, generated from raw data.
@@ -21,6 +22,7 @@ The site is static, generated from raw data.
     *   **`tools/fetch_daily.js`**: Orchestrates daily updates.
 2.  **Process**: Data is cleaned and structured.
 3.  **Build**: `node tools/build.js` is the master conductor.
+    *   **`tools/gpx-analyzer.js`**: (Pre-build) Scans local `gpx/` folder and generates metadata index.
     *   It reads `data/`.
     *   It loads templates from **`tools/lib/templates.js`**.
     *   It **generates** HTML files (incidents, profiles, **ground conditions**, **webcams**) and writes them to `archive/`.
@@ -30,15 +32,19 @@ The site is static, generated from raw data.
     *   **Frontend**: `archive/ground-conditions/upload.html` (generated via `templates.js`) submits to Cloudflare.
     *   **Backend**: `workers/upload-worker.js` handles POST requests and stores data in **Cloudflare KV**.
     *   **Sync**: `tools/fetch_uploads.js` retrieves data from KV to `data/uploads.json` so it can be baked into the static site.
+*   **GPX Library**:
+    *   **Frontend**: `gpx-library/index.html` (SPA).
+    *   **Backend**: `workers/upload-worker.js` (managed via `/gpx/*` endpoints).
+    *   **Data**: Stores metadata index (`gpx:index`) and files (`gpx:file:<id>`) in KV.
+    *   **Fallback**: Automatically falls back to local `gpx/routes-metadata.json` if offline.
 
 ## 🔑 Key Files "Cheatsheet"
 
 *   **`tools/lib/templates.js`**: **THE UI SOURCE**. All HTML for incidents, weather, profiles, **webcams**, and **ground conditions** is generated here. **If the user asks for a UI change, check this file first.**
 *   **`tools/build.js`**: The main build orchestrator.
 *   **`tools/lib/builders/buildGroundConditions.js`**: Builds the combined Ground Conditions & Webcam pages.
-*   **`workers/upload-worker.js`**: The API logic for handling skier uploads.
-*   **`tools/fetch_uploads.js`**: Sync script for user uploads.
-*   **`tools/lib/builders/*.js`**: Specific logic for building different sections.
+*   **`workers/upload-worker.js`**: API for User Uploads & **GPX Library**.
+*   **`tools/gpx-analyzer.js`**: Node script for local GPX metadata generation.
 *   **`styles.css`**: Global styles.
 
 ## 📚 Detailed Documentation
