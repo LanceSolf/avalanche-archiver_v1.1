@@ -66,43 +66,79 @@ async function loadRoutes() {
 
 
 // Render table
+// Render table
 function renderTable() {
-    const tbody = document.getElementById('routes-tbody');
+    const tableElement = document.querySelector('.routes-table');
     const noResults = document.getElementById('no-results');
 
     if (filteredRoutes.length === 0) {
-        tbody.innerHTML = '';
+        document.getElementById('routes-tbody').innerHTML = '';
         noResults.style.display = 'block';
         return;
     }
 
     noResults.style.display = 'none';
 
-    tbody.innerHTML = filteredRoutes.map(route => `
-        <tr>
-            <td>
-                <div class="route-name">${route.name}</div>
-            </td>
-            <td>
-                <div class="route-region">${route.region}</div>
-            </td>
-            <td>${route.distance} km</td>
-            <td>${route.ascent} m</td>
-            <td>
-                <span class="aspect-badge ${route.primaryAspect}">${route.primaryAspect}</span>
-            </td>
-            <td>
-                ${renderAspectBreakdown(route.aspectBreakdown)}
-            </td>
-            <td>
+    // Determine active columns based on filter toggles
+    const showDistance = document.getElementById('toggle-distance').checked;
+    const showAscent = document.getElementById('toggle-ascent').checked;
+    const showDescent = document.getElementById('toggle-descent').checked;
+    const showSlope = document.getElementById('toggle-slope').checked;
+    const showAspect = document.getElementById('toggle-aspect').checked;
+
+    // Build Header
+    let headerHTML = `<thead><tr>
+        <th data-sort="name">Route Name <span class="sort-icon">↕</span></th>`;
+
+    if (showDistance) headerHTML += `<th data-sort="distance">Distance <span class="sort-icon">↕</span></th>`;
+    if (showAscent) headerHTML += `<th data-sort="ascent">Ascent <span class="sort-icon">↕</span></th>`;
+    if (showDescent) headerHTML += `<th data-sort="descent">Descent <span class="sort-icon">↕</span></th>`;
+    if (showSlope) headerHTML += `<th data-sort="maxSlope">Max Slope <span class="sort-icon">↕</span></th>`;
+    if (showAspect) {
+        headerHTML += `<th data-sort="primaryAspect">Primary Aspect <span class="sort-icon">↕</span></th>`;
+        headerHTML += `<th>Aspect Breakdown</th>`;
+    }
+
+    headerHTML += `<th>Actions</th>
+    </tr></thead>`;
+
+    // Build Body
+    const rowsHTML = filteredRoutes.map(route => {
+        let row = `<tr>
+            <td><div class="route-name">${route.name}</div></td>`;
+
+        if (showDistance) row += `<td>${route.distance} km</td>`;
+        if (showAscent) row += `<td>${route.ascent} m</td>`;
+        if (showDescent) row += `<td>${route.descent ?? 0} m</td>`;
+        if (showSlope) row += `<td>${route.maxSlope ?? 0}°</td>`;
+
+        if (showAspect) {
+            row += `<td><span class="aspect-badge ${route.primaryAspect}">${route.primaryAspect}</span></td>`;
+            row += `<td>${renderAspectBreakdown(route.aspectBreakdown)}</td>`;
+        }
+
+        row += `<td>
                 <div class="action-buttons">
-                    <button class="btn-load" onclick="loadInPlanner('${route.id}')">Load in Planner</button>
-                    <button class="btn-view" onclick="viewRoute('${route.id}')">View GPX</button>
-                    <button class="btn-remove" onclick="requestDelete('${route.id}', '${route.name}')">Remove</button>
+                    <button class="btn-load" onclick="loadInPlanner('${route.id}')">Load</button>
+                    <button class="btn-view" onclick="viewRoute('${route.id}')">GPX</button>
+                    <button class="btn-remove" onclick="requestDelete('${route.id}', '${route.name}')">✕</button>
                 </div>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+        return row;
+    }).join('');
+
+    tableElement.innerHTML = headerHTML + `<tbody id="routes-tbody">${rowsHTML}</tbody>`;
+
+    // Re-attach sort listeners since we destroyed the headers
+    document.querySelectorAll('.routes-table th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+            const column = th.getAttribute('data-sort');
+            sortRoutes(column);
+        });
+    });
+
+    updateSortIndicators(); // Restore sort UI state
 }
 
 // Render aspect breakdown bar
