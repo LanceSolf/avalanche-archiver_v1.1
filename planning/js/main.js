@@ -356,116 +356,233 @@ ctrlRotateRight.addEventListener('click', () => {
 });
 
 // GPX Upload Logic
+// Modal State
+let pendingGPXFile = null;
+
 function initGPXUpload() {
     const fileInput = document.getElementById('gpx-file-input');
     const clearBtn = document.getElementById('btn-clear-gpx');
     const statusDiv = document.getElementById('gpx-status');
-    const filenameSpan = document.getElementById('gpx-filename');
     const uploadLabel = document.querySelector('.upload-btn');
+
+    // Choice Modal
+    const choiceModal = document.getElementById('uploadChoiceModal');
+    const btnChoiceView = document.getElementById('btn-choice-view');
+    const btnChoiceSave = document.getElementById('btn-choice-save');
+
+    // Save Modal
+    const saveModal = document.getElementById('saveRouteModal');
+    const nameInput = document.getElementById('save-route-name');
+    const btnConfirmSave = document.getElementById('btn-confirm-save');
 
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        filenameSpan.textContent = file.name;
-        uploadLabel.style.display = 'none';
-        statusDiv.style.display = 'flex';
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const gpxText = event.target.result;
-                const parser = new DOMParser();
-                const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-                const geojson = toGeoJSON.gpx(gpxDoc);
-
-                // Update map data
-                map.getSource('gpx-route').setData(geojson);
-
-                // Fit bounds
-                const bounds = new maplibregl.LngLatBounds();
-                let hasFeatures = false;
-
-                geojson.features.forEach(feature => {
-                    if (feature.geometry && feature.geometry.coordinates) {
-                        // LineString
-                        if (feature.geometry.type === 'LineString') {
-                            hasFeatures = true;
-                            feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
-                        }
-                        // MultiLineString
-                        else if (feature.geometry.type === 'MultiLineString') {
-                            hasFeatures = true;
-                            feature.geometry.coordinates.forEach(line => {
-                                line.forEach(coord => bounds.extend(coord));
-                            });
-                        }
-                    }
-                });
-
-                if (hasFeatures) {
-                    const is3D = terrainToggle.checked;
-                    const isMobile = window.innerWidth <= 768;
-
-                    // Adjust padding based on device and mode
-                    let padding = 50;
-                    if (is3D) {
-                        const h = map.getCanvas().height;
-
-
-                        // Dynamic Asymmetric Padding
-                        // Goal: Push route into the bottom 30% of the screen (Foreground)
-                        padding = {
-                            top: h * 0.65,    // Push down from horizon significantly
-                            bottom: 20,       // Keep close to bottom edge
-                            left: 50,
-                            right: isMobile ? 20 : 350 // Account for desktop sidebar
-                        };
-                    } else {
-                        padding = isMobile ? 20 : 50;
-                    }
-
-                    map.fitBounds(bounds, {
-                        padding: padding,
-                        maxZoom: 12.5 // "1km scale" / Safe 3D zoom level
-                    });
-                }
-
-            } catch (err) {
-                console.error('Error parsing GPX:', err);
-                alert('Invalid GPX file.');
-            }
-        };
-        reader.readAsText(file);
+        pendingGPXFile = file;
+        choiceModal.style.display = 'flex';
+        fileInput.value = ''; // Reset
     });
+
+    // View Only
+    btnChoiceView.onclick = () => {
+        if (pendingGPXFile) loadLocalGPX(pendingGPXFile);
+        closeUploadModal();
+    };
+
+    // Save
+    btnChoiceSave.onclick = () => {
+        choiceModal.style.display = 'none';
+        saveModal.style.display = 'flex';
+        if (pendingGPXFile) {
+            // Pre-analyze to get name or just use filename
+            nameInput.value = pendingGPXFile.name.replace(/\.gpx$/i, '');
+        }
+    };
+
+    // Confirm Save
+    btnConfirmSave.onclick = async () => {
+        if (!pendingGPXFile) return;
+        const name = nameInput.value.trim() || pendingGPXFile.name;
+
+        btnConfirmSave.disabled = true;
+        btnConfirmSave.textContent = 'Saving...';
+
+        try {
+            await uploadAndLoadGPX(pendingGPXFile, name);
+            closeSaveModal();
+        } catch (err) {
+            alert('Save failed: ' + err.message);
+        } finally {
+            btnConfirmSave.disabled = false;
+            btnConfirmSave.textContent = 'Save & View';
+        }
+    };
 
     clearBtn.addEventListener('click', () => {
-        // Clear map source
-        map.getSource('gpx-route').setData({
-            type: 'FeatureCollection',
-            features: []
-        });
-
-        // Reset UI
-        fileInput.value = ''; // allow re-uploading same file
+        map.getSource('gpx-route').setData({ type: 'FeatureCollection', features: [] });
         statusDiv.style.display = 'none';
-        uploadLabel.style.display = 'inline-block';
+        uploadLabel.style.display = 'flex';
     });
+}
+
+function closeUploadModal() {
+    document.getElementById('uploadChoiceModal').style.display = 'none';
+    pendingGPXFile = null;
+}
+
+function closeSaveModal() {
+    document.getElementById('saveRouteModal').style.display = 'none';
+    pendingGPXFile = null;
+}
+
+function loadLocalGPX(file) {
+    const statusDiv = document.getElementById('gpx-status');
+    const filenameSpan = document.getElementById('gpx-filename');
+    const uploadLabel = document.querySelector('.upload-btn');
+
+    filenameSpan.textContent = file.name;
+    uploadLabel.style.display = 'none';
+    statusDiv.style.display = 'flex';
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        processGPXTextToMap(event.target.result);
+    };
+    reader.readAsText(file);
+}
+
+async function uploadAndLoadGPX(file, name) {
+    const text = await file.text();
+    const parser = new DOMParser();
+    const gpxDoc = parser.parseFromString(text, 'text/xml');
+
+    // Analyze using the helper we added
+    const metadata = analyzeGPXContent(gpxDoc, file.name);
+
+    if (!metadata) throw new Error('Invalid GPX content');
+
+    metadata.name = name;
+    // Enforce filename convention
+    const safeId = metadata.id;
+    metadata.filename = `${safeId}.gpx`;
+
+    const response = await fetch(`${WORKER_URL}/gpx/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            gpxContent: text,
+            metadata: metadata
+        })
+    });
+
+    if (!response.ok) throw new Error('Upload failed');
+
+    // Load into map
+    loadLocalGPX(file);
+    alert('Route saved to Library!');
+}
+
+function processGPXTextToMap(gpxText) {
+    try {
+        const parser = new DOMParser();
+        const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
+        const geojson = toGeoJSON.gpx(gpxDoc);
+        map.getSource('gpx-route').setData(geojson);
+        fitMapToGeoJSON(geojson);
+    } catch (err) {
+        console.error('Error parsing GPX:', err);
+        alert('Invalid GPX file.');
+    }
+}
+
+function fitMapToGeoJSON(geojson) {
+    const bounds = new maplibregl.LngLatBounds();
+    let hasFeatures = false;
+
+    geojson.features.forEach(feature => {
+        if (feature.geometry && feature.geometry.coordinates) {
+            if (feature.geometry.type === 'LineString') {
+                hasFeatures = true;
+                feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
+            } else if (feature.geometry.type === 'MultiLineString') {
+                hasFeatures = true;
+                feature.geometry.coordinates.forEach(line => {
+                    line.forEach(coord => bounds.extend(coord));
+                });
+            }
+        }
+    });
+
+    if (hasFeatures) {
+        const is3D = document.getElementById('terrain-toggle').checked;
+        const isMobile = window.innerWidth <= 768;
+        let padding = 50;
+        if (is3D) {
+            const h = map.getCanvas().height;
+            padding = {
+                top: h * 0.65,
+                bottom: 20,
+                left: 50,
+                right: isMobile ? 20 : 350
+            };
+        } else {
+            padding = isMobile ? 20 : 50;
+        }
+        map.fitBounds(bounds, { padding: padding, maxZoom: 12.5 });
+    }
 }
 
 // Check for GPX parameter in URL and load from library
 function checkGPXParameter() {
     const urlParams = new URLSearchParams(window.location.search);
+    const filename = urlParams.get('filename');
+    const name = urlParams.get('name');
     const gpxId = urlParams.get('gpx');
 
-    if (gpxId) {
+    if (filename) {
+        loadGPXFromFilename(filename, name);
+    } else if (gpxId) {
         loadGPXFromLibrary(gpxId);
     }
 }
 
 const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev';
 
-// Load GPX file from library
+async function loadGPXFromFilename(filename, name) {
+    try {
+        updateGPXUI(name || filename, true); // Show loading state?
+        const safeFilename = encodeURIComponent(filename);
+
+        // Strategy 1: Cloud via /gpx/ prefix
+        let gpxResponse = await fetch(`${WORKER_URL}/gpx/${safeFilename}`);
+
+        // Strategy 2: Cloud root (fallback)
+        if (!gpxResponse.ok) {
+            console.warn('Cloud /gpx/ fetch failed, trying root...');
+            gpxResponse = await fetch(`${WORKER_URL}/${safeFilename}`);
+        }
+
+        // Strategy 3: Local Fallback (if user has files)
+        if (!gpxResponse.ok) {
+            console.warn('Cloud fetch failed, trying local fallback...');
+            gpxResponse = await fetch(`../gpx/${filename}`);
+        }
+
+        if (!gpxResponse.ok) {
+            throw new Error(`Failed to fetch GPX file: ${gpxResponse.status}`);
+        }
+
+        const gpxText = await gpxResponse.text();
+        processGPXTextToMap(gpxText);
+        updateGPXUI(name || filename);
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to load GPX: ' + err.message);
+    }
+}
+
+// Load GPX file from library (Legacy ID lookup)
 async function loadGPXFromLibrary(routeId) {
     try {
         console.log('Loading GPX from library:', routeId);
@@ -483,76 +600,32 @@ async function loadGPXFromLibrary(routeId) {
             return;
         }
 
-        console.log('Found route metadata:', route);
-
         // Fetch the GPX file
-        const gpxResponse = await fetch(`${WORKER_URL}/gpx/${route.filename}`);
-        if (!gpxResponse.ok) throw new Error(`Failed to fetch GPX file: ${gpxResponse.status}`);
+        const safeFilename = encodeURIComponent(route.filename);
+        const gpxResponse = await fetch(`${WORKER_URL}/gpx/${safeFilename}`);
+
+        if (!gpxResponse.ok) {
+            throw new Error(`Failed to fetch GPX file: ${gpxResponse.status} ${gpxResponse.statusText}`);
+        }
 
         const gpxText = await gpxResponse.text();
-
-        // Parse and load
-        const parser = new DOMParser();
-        const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-        const geojson = toGeoJSON.gpx(gpxDoc);
-
-        // Update map data
-        map.getSource('gpx-route').setData(geojson);
-
-        // Update UI
-        const filenameSpan = document.getElementById('gpx-filename');
-        const statusDiv = document.getElementById('gpx-status');
-        const uploadLabel = document.querySelector('.upload-btn');
-
-        filenameSpan.textContent = route.name;
-        uploadLabel.style.display = 'none';
-        statusDiv.style.display = 'flex';
-
-        // Fit bounds
-        const bounds = new maplibregl.LngLatBounds();
-        let hasFeatures = false;
-
-        geojson.features.forEach(feature => {
-            if (feature.geometry && feature.geometry.coordinates) {
-                if (feature.geometry.type === 'LineString') {
-                    hasFeatures = true;
-                    feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
-                } else if (feature.geometry.type === 'MultiLineString') {
-                    hasFeatures = true;
-                    feature.geometry.coordinates.forEach(line => {
-                        line.forEach(coord => bounds.extend(coord));
-                    });
-                }
-            }
-        });
-
-        if (hasFeatures) {
-            const is3D = terrainToggle.checked;
-            const isMobile = window.innerWidth <= 768;
-
-            let padding = 50;
-            if (is3D) {
-                const h = map.getCanvas().height;
-                padding = {
-                    top: h * 0.65,
-                    bottom: 20,
-                    left: 50,
-                    right: isMobile ? 20 : 350
-                };
-            } else {
-                padding = isMobile ? 20 : 50;
-            }
-
-            map.fitBounds(bounds, {
-                padding: padding,
-                maxZoom: 12.5
-            });
-        }
+        processGPXTextToMap(gpxText);
+        updateGPXUI(route.name);
 
     } catch (error) {
         console.error('Failed to load GPX from library:', error);
         alert('Failed to load route from library.');
     }
+}
+
+function updateGPXUI(name, loading = false) {
+    const filenameSpan = document.getElementById('gpx-filename');
+    const statusDiv = document.getElementById('gpx-status');
+    const uploadLabel = document.querySelector('.upload-btn');
+
+    filenameSpan.textContent = loading ? 'Loading...' : name;
+    uploadLabel.style.display = 'none';
+    statusDiv.style.display = 'flex';
 }
 
 // Drawer Controls logic
@@ -723,4 +796,148 @@ if (bottomDrawerToggle && bottomDrawerContainer) {
             }
         }
     });
+}
+
+// GPX Analysis Helpers
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function calculateSlopeAndAspect(p1, p2, distance) {
+    const elevationChange = p2.ele - p1.ele;
+    const slopeRad = Math.atan(elevationChange / distance);
+    const slopeDeg = slopeRad * 180 / Math.PI;
+
+    const lat1 = p1.lat * Math.PI / 180;
+    const lat2 = p2.lat * Math.PI / 180;
+    const Δλ = (p2.lon - p1.lon) * Math.PI / 180;
+
+    const y = Math.sin(Δλ) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(Δλ);
+    let bearing = Math.atan2(y, x) * 180 / Math.PI;
+    bearing = (bearing + 360) % 360;
+
+    return { slope: Math.abs(slopeDeg), aspect: bearing };
+}
+
+function categorizeAspect(bearing) {
+    if (bearing >= 337.5 || bearing < 22.5) return 'N';
+    if (bearing >= 22.5 && bearing < 67.5) return 'NE';
+    if (bearing >= 67.5 && bearing < 112.5) return 'E';
+    if (bearing >= 112.5 && bearing < 157.5) return 'SE';
+    if (bearing >= 157.5 && bearing < 202.5) return 'S';
+    if (bearing >= 202.5 && bearing < 247.5) return 'SW';
+    if (bearing >= 247.5 && bearing < 292.5) return 'W';
+    return 'NW';
+}
+
+function analyzeGPXContent(gpxDoc, filename) {
+    const trkpts = gpxDoc.getElementsByTagName('trkpt');
+    const trackPoints = [];
+    for (let i = 0; i < trkpts.length; i++) {
+        const trkpt = trkpts[i];
+        const lat = parseFloat(trkpt.getAttribute('lat'));
+        const lon = parseFloat(trkpt.getAttribute('lon'));
+        const eleNode = trkpt.getElementsByTagName('ele')[0];
+        const ele = eleNode ? parseFloat(eleNode.textContent) : 0;
+        trackPoints.push({ lat, lon, ele });
+    }
+    if (trackPoints.length < 2) return null;
+
+    let totalDistance = 0;
+    let totalAscent = 0;
+    let totalDescent = 0;
+    let elevationMin = Infinity;
+    let elevationMax = -Infinity;
+    let maxSlope = 0;
+    let totalSlopeDistance = 0;
+    const aspectDistances = { N: 0, NE: 0, E: 0, SE: 0, S: 0, SW: 0, W: 0, NW: 0 };
+    let totalDistanceAboveThreshold = 0;
+    const descentAspectDistances = { N: 0, NE: 0, E: 0, SE: 0, S: 0, SW: 0, W: 0, NW: 0 };
+    let totalDescentDistanceAboveThreshold = 0;
+
+    for (let i = 0; i < trackPoints.length - 1; i++) {
+        const p1 = trackPoints[i];
+        const p2 = trackPoints[i + 1];
+        const distance = haversineDistance(p1.lat, p1.lon, p2.lat, p2.lon);
+        totalDistance += distance;
+        const elevChange = p2.ele - p1.ele;
+        if (elevChange > 0) totalAscent += elevChange;
+        if (elevChange < 0) totalDescent += Math.abs(elevChange);
+        elevationMin = Math.min(elevationMin, p1.ele, p2.ele);
+        elevationMax = Math.max(elevationMax, p1.ele, p2.ele);
+        let { slope, aspect } = calculateSlopeAndAspect(p1, p2, distance);
+        if (elevChange > 0) aspect = (aspect + 180) % 360;
+        maxSlope = Math.max(maxSlope, slope);
+        totalSlopeDistance += slope * distance;
+
+        if (slope >= 15) {
+            const aspectCategory = categorizeAspect(aspect);
+            aspectDistances[aspectCategory] += distance;
+            totalDistanceAboveThreshold += distance;
+        }
+        if (elevChange < 0 && slope >= 15) {
+            const aspectCategory = categorizeAspect(aspect);
+            descentAspectDistances[aspectCategory] += distance;
+            totalDescentDistanceAboveThreshold += distance;
+        }
+    }
+
+    const aspectBreakdown = {};
+    for (const dir in aspectDistances) {
+        aspectBreakdown[dir] = totalDistanceAboveThreshold > 0
+            ? parseFloat((aspectDistances[dir] / totalDistanceAboveThreshold * 100).toFixed(1))
+            : 0;
+    }
+    const avgSlope = totalDistance > 0 ? (totalSlopeDistance / totalDistance) : 0;
+    let primaryAspect = 'N';
+    let maxDescentDistance = 0;
+    for (const dir in descentAspectDistances) {
+        if (descentAspectDistances[dir] > maxDescentDistance) {
+            maxDescentDistance = descentAspectDistances[dir];
+            primaryAspect = dir;
+        }
+    }
+    if (maxDescentDistance === 0) {
+        let maxAspectDist = 0;
+        for (const dir in aspectDistances) {
+            if (aspectDistances[dir] > maxAspectDist) {
+                maxAspectDist = aspectDistances[dir];
+                primaryAspect = dir;
+            }
+        }
+    }
+
+    let displayName = filename.replace(/\.gpx$/i, '');
+    let region = 'Allgäu Alps';
+    const lowerName = displayName.toLowerCase();
+    if (lowerName.includes('kleinwalsertal') || lowerName.includes('fellhorn')) {
+        region = 'Allgäu Alps West';
+    } else if (lowerName.includes('oberstdorf') || lowerName.includes('nebelhorn')) {
+        region = 'Allgäu Alps Central';
+    }
+
+    return {
+        id: filename.replace('.gpx', '').replace(/\s+/g, '-').toLowerCase() + '-' + Date.now().toString().slice(-4),
+        name: displayName,
+        filename: filename,
+        region,
+        distance: parseFloat((totalDistance / 1000).toFixed(2)),
+        ascent: Math.round(totalAscent),
+        descent: Math.round(totalDescent),
+        elevationMin: Math.round(elevationMin),
+        elevationMax: Math.round(elevationMax),
+        maxSlope: Math.round(maxSlope),
+        avgSlope: parseFloat(avgSlope.toFixed(1)),
+        primaryAspect,
+        aspectBreakdown
+    };
 }

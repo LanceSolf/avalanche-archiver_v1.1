@@ -108,7 +108,7 @@ function renderTable() {
         row += `<td>
                 <div class="action-buttons">
                     <button class="btn-load" onclick="loadInPlanner('${route.id}')">Load</button>
-                    <button class="btn-view" onclick="viewRoute('${route.id}')">GPX</button>
+                    <button class="btn-view" onclick="downloadRoute('${route.id}')" title="Download GPX" style="display:flex; align-items:center; gap:4px;">GPX <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
                     <button class="btn-remove" onclick="requestDelete('${route.id}', '${route.name}')">✕</button>
                 </div>
             </td>
@@ -254,14 +254,37 @@ function applyFilters() {
 
 // Load route in planning tool
 function loadInPlanner(routeId) {
-    window.location.href = `../planning/index.html?gpx=${routeId}`;
-}
-
-// View GPX file
-function viewRoute(routeId) {
     const route = allRoutes.find(r => r.id === routeId);
     if (route) {
-        window.open(`${WORKER_URL}/gpx/${route.filename}`, '_blank');
+        // Pass filename and name directly to avoid fetching list in Planner
+        const params = new URLSearchParams();
+        params.set('filename', route.filename);
+        params.set('name', route.name);
+        window.location.href = `../planning/index.html?${params.toString()}`;
+    }
+}
+
+// Download GPX file
+async function downloadRoute(routeId) {
+    const route = allRoutes.find(r => r.id === routeId);
+    if (!route) return;
+
+    try {
+        const response = await fetch(`${WORKER_URL}/gpx/${route.filename}`);
+        if (!response.ok) throw new Error('Download failed');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = route.filename; // Force filename
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error(err);
+        alert('Failed to download GPX.');
     }
 }
 
