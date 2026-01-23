@@ -81,7 +81,7 @@ function parseGPX(filePath) {
         trackPoints.push({ lat, lon, ele });
     }
 
-    return { metadata, trackPoints };
+    return { metadata, trackPoints, gpxDoc, trkpts };
 }
 
 // Calculate slope and aspect between two points
@@ -122,7 +122,7 @@ function categorizeAspect(bearing) {
 async function analyzeRoute(filePath) {
     console.log(`Analyzing: ${path.basename(filePath)}`);
 
-    const { metadata, trackPoints } = parseGPX(filePath);
+    const { metadata, trackPoints, gpxDoc, trkpts } = parseGPX(filePath);
 
     // Check if we need to backfill elevation
     let hasElevation = false;
@@ -137,7 +137,7 @@ async function analyzeRoute(filePath) {
     if (!hasElevation) {
         console.log('  ⚠ No elevation data found. Attempting to fetch from open-elevation.com...');
         try {
-            await enrichElevation(trackPoints);
+            await enrichElevation(trackPoints, trkpts, gpxDoc);
             console.log('  ✓ Elevation fetched successfully.');
         } catch (err) {
             console.warn('  ✘ Failed to fetch elevation:', err.message);
@@ -148,13 +148,14 @@ async function analyzeRoute(filePath) {
     // ... rest of function ...
 
     // Helper function to fetch elevation using OpenTopoData (EUDEM 25m - Europe Only)
-    async function enrichElevation(trackPoints) {
+    async function enrichElevation(trackPoints, trkpts, gpxDoc) {
         console.log(`    Requesting elevation backfill from OpenTopoData (EUDEM 25m) for ${trackPoints.length} points...`);
 
         // OpenTopoData limit: 100 locations per request. 1 request per second.
         const CHUNK_SIZE = 50;
         const DELAY_MS = 1200; // Be nice to the API
         let successCount = 0;
+        let modified = false;
 
         for (let i = 0; i < trackPoints.length; i += CHUNK_SIZE) {
             const chunk = trackPoints.slice(i, i + CHUNK_SIZE);
@@ -187,11 +188,22 @@ async function analyzeRoute(filePath) {
 
                 if (results) {
                     results.forEach((result, idx) => {
-                        // OpenTopoData returns { elevation: 123, ... }
-                        // Sometimes elevation is null if out of bounds
                         if (result && typeof result.elevation === 'number') {
+                            // Update JS object
                             chunk[idx].ele = result.elevation;
                             successCount++;
+                            modified = true;
+
+                            // Update XML Node
+                            if (trkpts && trkpts[i + idx]) {
+                                const trkpt = trkpts[i + idx];
+                                let eleNode = trkpt.getElementsByTagName('ele')[0];
+                                if (!eleNode) {
+                                    eleNode = gpxDoc.createElement('ele');
+                                    trkpt.appendChild(eleNode);
+                                }
+                                eleNode.textContent = result.elevation.toFixed(1);
+                            }
                         }
                     });
                 }
@@ -201,13 +213,23 @@ async function analyzeRoute(filePath) {
 
             } catch (e) {
                 console.warn(`\n    ⚠ Failed fetch chunk ${i}: ${e.message}`);
-                // If 429/Too Many Requests, wait longer and retry? For now just skip.
             }
         }
 
         console.log('\n'); // Newline after dots
         if (successCount > 0) {
             console.log(`    ✓ Successfully filled elevation for ${successCount}/${trackPoints.length} points.`);
+
+            // Persist to disk
+            if (modified && gpxDoc) {
+                console.log(`    💾 Persisting updated elevation to ${path.basename(filePath)}...`);
+                // Use XMLSerializer equivalent (xmldom has toString())
+                const serializer = new (require('@xmldom/xmldom').XMLSerializer)();
+                const newContent = serializer.serializeToString(gpxDoc);
+                fs.writeFileSync(filePath, newContent, 'utf-8');
+                console.log('    ✓ File updated.');
+            }
+
         } else {
             console.warn('    ⚠ Failed to backfill elevation. Data may be outside EUDEM coverage (Europe).');
         }
