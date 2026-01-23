@@ -124,12 +124,94 @@ async function analyzeRoute(filePath) {
 
     const { metadata, trackPoints } = parseGPX(filePath);
 
-    if (trackPoints.length < 2) {
-        console.warn(`Skipping ${filePath}: insufficient track points`);
-        return null;
+    // Check if we need to backfill elevation
+    let hasElevation = false;
+    let lastEle = trackPoints[0].ele;
+    for (const p of trackPoints) {
+        if (p.ele !== 0 && p.ele !== lastEle) {
+            hasElevation = true;
+            break;
+        }
+    }
+
+    if (!hasElevation) {
+        console.log('  ⚠ No elevation data found. Attempting to fetch from open-elevation.com...');
+        try {
+            await enrichElevation(trackPoints);
+            console.log('  ✓ Elevation fetched successfully.');
+        } catch (err) {
+            console.warn('  ✘ Failed to fetch elevation:', err.message);
+        }
     }
 
     let totalDistance = 0;
+    // ... rest of function ...
+
+    // Helper function to fetch elevation using OpenTopoData (EUDEM 25m - Europe Only)
+    async function enrichElevation(trackPoints) {
+        console.log(`    Requesting elevation backfill from OpenTopoData (EUDEM 25m) for ${trackPoints.length} points...`);
+
+        // OpenTopoData limit: 100 locations per request. 1 request per second.
+        const CHUNK_SIZE = 50;
+        const DELAY_MS = 1200; // Be nice to the API
+        let successCount = 0;
+
+        for (let i = 0; i < trackPoints.length; i += CHUNK_SIZE) {
+            const chunk = trackPoints.slice(i, i + CHUNK_SIZE);
+            // Format: lat,lon|lat,lon
+            const locationsParam = chunk.map(p => `${p.lat},${p.lon}`).join('|');
+
+            try {
+                const url = `https://api.opentopodata.org/v1/eudem25m?locations=${locationsParam}`;
+
+                const results = await new Promise((resolve, reject) => {
+                    const req = https.get(url, (res) => {
+                        const chunks = [];
+                        res.on('data', d => chunks.push(d));
+                        res.on('end', () => {
+                            if (res.statusCode !== 200) {
+                                reject(new Error(`API Error ${res.statusCode}`));
+                                return;
+                            }
+                            try {
+                                const buffer = Buffer.concat(chunks);
+                                const json = JSON.parse(buffer.toString());
+                                resolve(json.results);
+                            } catch (e) {
+                                reject(e);
+                            }
+                        });
+                    });
+                    req.on('error', reject);
+                });
+
+                if (results) {
+                    results.forEach((result, idx) => {
+                        // OpenTopoData returns { elevation: 123, ... }
+                        // Sometimes elevation is null if out of bounds
+                        if (result && typeof result.elevation === 'number') {
+                            chunk[idx].ele = result.elevation;
+                            successCount++;
+                        }
+                    });
+                }
+
+                process.stdout.write('.'); // progress dot
+                await new Promise(r => setTimeout(r, DELAY_MS));
+
+            } catch (e) {
+                console.warn(`\n    ⚠ Failed fetch chunk ${i}: ${e.message}`);
+                // If 429/Too Many Requests, wait longer and retry? For now just skip.
+            }
+        }
+
+        console.log('\n'); // Newline after dots
+        if (successCount > 0) {
+            console.log(`    ✓ Successfully filled elevation for ${successCount}/${trackPoints.length} points.`);
+        } else {
+            console.warn('    ⚠ Failed to backfill elevation. Data may be outside EUDEM coverage (Europe).');
+        }
+    }
     let totalAscent = 0;
     let totalDescent = 0;
     let elevationMin = Infinity;
@@ -140,6 +222,9 @@ async function analyzeRoute(filePath) {
     // Aspect breakdown for slopes >15°
     const aspectDistances = { N: 0, NE: 0, E: 0, SE: 0, S: 0, SW: 0, W: 0, NW: 0 };
     let totalDistanceAboveThreshold = 0;
+
+    // Gentle Aspect Breakdown (Slopes > 3°) - Ultimate Fallback
+    const gentleAspectDistances = { N: 0, NE: 0, E: 0, SE: 0, S: 0, SW: 0, W: 0, NW: 0 };
 
     // Aspect tracking for descent for slopes > 15°
     const descentAspectDistances = { N: 0, NE: 0, E: 0, SE: 0, S: 0, SW: 0, W: 0, NW: 0 };
@@ -180,6 +265,12 @@ async function analyzeRoute(filePath) {
             totalDistanceAboveThreshold += distance;
         }
 
+        // 1b. Gentle Aspect Breakdown (Slopes > 3°)
+        if (slope >= 3) {
+            const aspectCategory = categorizeAspect(aspect);
+            gentleAspectDistances[aspectCategory] += distance;
+        }
+
         // 2. Primary Aspect Calculation (Descent Only)
         // We look at ALL descent segments > 15 degrees
         if (elevChange < 0 && slope >= 15) {
@@ -200,7 +291,7 @@ async function analyzeRoute(filePath) {
     // Calculate average slope
     const avgSlope = totalDistance > 0 ? (totalSlopeDistance / totalDistance) : 0;
 
-    // Determine primary descent aspect
+    // Determine primary descent aspect (Priority 1: Descent > 15°)
     let primaryAspect = 'N';
     let maxDescentDistance = 0;
     for (const dir in descentAspectDistances) {
@@ -210,13 +301,25 @@ async function analyzeRoute(filePath) {
         }
     }
 
-    // Fallback: If no significant descent found (>15°), try general breakdown
+    // Fallback 1: If no significant descent found (>15°), try general breakdown (>15°)
     if (maxDescentDistance === 0) {
         let maxAspectDist = 0;
         for (const dir in aspectDistances) {
             if (aspectDistances[dir] > maxAspectDist) {
                 maxAspectDist = aspectDistances[dir];
                 primaryAspect = dir;
+            }
+        }
+
+        // Fallback 2: If STILL 0 (all terrain < 15°), use gentle aspect breakdown (>3°)
+        // This stops flat tours from defaulting to N
+        if (maxAspectDist === 0) {
+            let maxGentleDist = 0;
+            for (const dir in gentleAspectDistances) {
+                if (gentleAspectDistances[dir] > maxGentleDist) {
+                    maxGentleDist = gentleAspectDistances[dir];
+                    primaryAspect = dir;
+                }
             }
         }
     }
