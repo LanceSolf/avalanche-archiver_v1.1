@@ -125,19 +125,7 @@ a {
   color: var(--primary-blue);
 }
 
-/* Special Items (Landing Page) */
-.landing-incident-item {
-  background: #fef2f2;
-  /* Red 50 */
-  color: var(--accent-red);
-  border-color: #fee2e2;
-}
-
-.landing-incident-item:hover {
-  background: #fee2e2;
-  color: var(--accent-red-hover);
-  border-color: var(--accent-red);
-}
+/* Special Items (Landing Page) styles removed to match standard style */
 
 /* Incident Cards (List) */
 .incident-card {
