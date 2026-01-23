@@ -463,22 +463,32 @@ function checkGPXParameter() {
     }
 }
 
+const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev';
+
 // Load GPX file from library
 async function loadGPXFromLibrary(routeId) {
-    const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev';
     try {
+        console.log('Loading GPX from library:', routeId);
+
         // Fetch metadata to get filename
         const metadataResponse = await fetch(`${WORKER_URL}/gpx/list`);
+        if (!metadataResponse.ok) throw new Error('Failed to fetch route list');
+
         const metadata = await metadataResponse.json();
         const route = (metadata.routes || []).find(r => r.id === routeId);
 
         if (!route) {
             console.error(`Route ${routeId} not found in library`);
+            alert('Route not found in Cloud Library.');
             return;
         }
 
+        console.log('Found route metadata:', route);
+
         // Fetch the GPX file
         const gpxResponse = await fetch(`${WORKER_URL}/gpx/${route.filename}`);
+        if (!gpxResponse.ok) throw new Error(`Failed to fetch GPX file: ${gpxResponse.status}`);
+
         const gpxText = await gpxResponse.text();
 
         // Parse and load
