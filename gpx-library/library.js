@@ -750,10 +750,9 @@ function initGPXUpload() {
         if (!file) return;
 
         uploadedGPXFile = file;
-        // filenameSpan.textContent = file.name; // Removed
 
-        uploadLabel.style.display = 'none';
-        uploadStatus.style.display = 'flex';
+        // Pre-fill name using analysis logic
+        const reader = new FileReader();
         reader.onload = (event) => {
             const gpxText = event.target.result;
             const parser = new DOMParser();
