@@ -18,8 +18,27 @@ const aspectColors = {
 
 // Load routes metadata
 async function loadRoutes() {
+    // Detect Localhost
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    // If Localhost, skip Worker and use local file immediately (to ensure we see fresh non-cached local builds)
+    if (isLocalhost) {
+        console.log('Localhost detected: Using local routes-metadata.json');
+        try {
+            const response = await fetch(`../gpx/routes-metadata.json?t=${Date.now()}`); // Cache-bust
+            const data = await response.json();
+            allRoutes = data.routes;
+        } catch (localError) {
+            console.error('Failed to load local routes:', localError);
+            allRoutes = [];
+        }
+        filteredRoutes = [...allRoutes];
+        renderTable();
+        return;
+    }
+
     try {
-        // Try fetching from Worker first
+        // Try fetching from Worker first (Production behavior)
         const response = await fetch(`${WORKER_URL}/gpx/list`);
         if (response.ok) {
             const data = await response.json();
@@ -31,7 +50,7 @@ async function loadRoutes() {
         // Fallback to local files
         console.log('Fetching local routes (Worker unavailable)');
         try {
-            const response = await fetch('../gpx/routes-metadata.json');
+            const response = await fetch(`../gpx/routes-metadata.json?t=${Date.now()}`);
             const data = await response.json();
             allRoutes = data.routes;
         } catch (localError) {
@@ -662,12 +681,18 @@ async function processGPXFile() {
                     throw new Error('Worker returned error');
                 }
             } catch (workerError) {
-                console.warn('Worker upload failed, falling back to local instructions:', workerError);
+                console.warn('Worker upload failed/skipped:', workerError);
 
-                // Fallback to Manual Instructions
-                alert(`Analysis complete!\n\nName: ${metadata.name}\nDistance: ${metadata.distance}km\nAscent: ${metadata.ascent}m\n\n(Backend unavailable. To save manually:\n1. Rename file to: ${metadata.filename}\n2. Save to 'gpx/' folder.\n3. Add metadata to routes-metadata.json)`);
+                // LOCALHOST / FALLBACK BEHAVIOR:
+                // 1. Add to local memory so it appears in the table immediately
+                allRoutes.push(metadata);
+                filteredRoutes = [...allRoutes];
+                renderTable();
 
-                // Trigger download for the user with the correct filename
+                // 2. Alert user with instructions
+                alert(`Analysis Success!\n\nName: ${metadata.name}\nAspect: ${metadata.primaryAspect}\n\nSince you are on Localhost (or Worker is down):\n1. The file "${metadata.filename}" has been downloaded.\n2. Move it to your local 'gpx/' folder.\n3. Run 'npm run build' to update the index permanently.`);
+
+                // 3. Trigger download of the renamed GPX file
                 const blob = new Blob([gpxText], { type: 'application/gpx+xml' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -680,6 +705,8 @@ async function processGPXFile() {
 
                 resetUploadUI();
             }
+
+
         };
 
         reader.readAsText(uploadedGPXFile);
