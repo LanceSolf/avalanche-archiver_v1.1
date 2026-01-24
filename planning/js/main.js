@@ -1,3 +1,5 @@
+import { APP_CONFIG, GPXUtils } from '../../js/gpx-utils.js';
+
 // Initialize map centered on Allgäu Alps
 const map = new maplibregl.Map({
     container: 'map',
@@ -446,18 +448,20 @@ function loadLocalGPX(file) {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        processGPXTextToMap(event.target.result);
+        GPXUtils.processGPXTextToMap(map, event.target.result);
     };
     reader.readAsText(file);
 }
+
+const WORKER_URL = APP_CONFIG.WORKER_URL;
 
 async function uploadAndLoadGPX(file, name) {
     const text = await file.text();
     const parser = new DOMParser();
     const gpxDoc = parser.parseFromString(text, 'text/xml');
 
-    // Analyze using the helper we added
-    const metadata = analyzeGPXContent(gpxDoc, file.name);
+    // Analyze using the utils
+    const metadata = GPXUtils.analyzeGPXContent(gpxDoc, file.name);
 
     if (!metadata) throw new Error('Invalid GPX content');
 
@@ -482,56 +486,6 @@ async function uploadAndLoadGPX(file, name) {
     alert('Route saved to Library!');
 }
 
-function processGPXTextToMap(gpxText) {
-    try {
-        const parser = new DOMParser();
-        const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-        const geojson = toGeoJSON.gpx(gpxDoc);
-        map.getSource('gpx-route').setData(geojson);
-        fitMapToGeoJSON(geojson);
-    } catch (err) {
-        console.error('Error parsing GPX:', err);
-        alert('Invalid GPX file.');
-    }
-}
-
-function fitMapToGeoJSON(geojson) {
-    const bounds = new maplibregl.LngLatBounds();
-    let hasFeatures = false;
-
-    geojson.features.forEach(feature => {
-        if (feature.geometry && feature.geometry.coordinates) {
-            if (feature.geometry.type === 'LineString') {
-                hasFeatures = true;
-                feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
-            } else if (feature.geometry.type === 'MultiLineString') {
-                hasFeatures = true;
-                feature.geometry.coordinates.forEach(line => {
-                    line.forEach(coord => bounds.extend(coord));
-                });
-            }
-        }
-    });
-
-    if (hasFeatures) {
-        const is3D = document.getElementById('terrain-toggle').checked;
-        const isMobile = window.innerWidth <= 768;
-        let padding = 50;
-        if (is3D) {
-            const h = map.getCanvas().height;
-            padding = {
-                top: h * 0.65,
-                bottom: 20,
-                left: 50,
-                right: isMobile ? 20 : 350
-            };
-        } else {
-            padding = isMobile ? 20 : 50;
-        }
-        map.fitBounds(bounds, { padding: padding, maxZoom: 12.5 });
-    }
-}
-
 // Check for GPX parameter in URL and load from library
 function checkGPXParameter() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -545,8 +499,6 @@ function checkGPXParameter() {
         loadGPXFromLibrary(gpxId);
     }
 }
-
-const WORKER_URL = 'https://avalanche-archiver-uploads.bigdoggybollock.workers.dev';
 
 async function loadGPXFromFilename(filename, name) {
     try {
@@ -566,7 +518,7 @@ async function loadGPXFromFilename(filename, name) {
         }
 
         const gpxText = await gpxResponse.text();
-        processGPXTextToMap(gpxText);
+        GPXUtils.processGPXTextToMap(map, gpxText);
         updateGPXUI(name || filename);
 
     } catch (err) {
@@ -601,7 +553,7 @@ async function loadGPXFromLibrary(routeId) {
         }
 
         const gpxText = await gpxResponse.text();
-        processGPXTextToMap(gpxText);
+        GPXUtils.processGPXTextToMap(map, gpxText);
         updateGPXUI(route.name);
 
     } catch (error) {
