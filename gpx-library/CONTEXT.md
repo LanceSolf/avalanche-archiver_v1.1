@@ -5,8 +5,9 @@ The **GPX Library** is a dedicated module for archiving, visualizing, and analyz
 
 ## Structure
 *   **`index.html`**: The main entry point. Contains the UI structure, filter panels, and route table.
-*   **`library.js`**: Core logic. Handles fetching data, client-side GPX analysis, filtering, sorting, and UI interactions (Upload/Delete).
-*   **`library.css`**: Module-specific styling, including the custom toggle switches and dual-range sliders.
+*   **`js/gpx-utils.js`**: Shared utility library for GPX analysis and configuration (used by both Library and Planner).
+*   **`library.js`**: Core logic. Handles fetching data, filtering, sorting, and UI interactions.
+*   **`library.css`**: Module-specific styling.
 
 ## Hybrid Architecture
 The library is designed to work both online (Cloudflare Worker) and offline (Local JSON).
