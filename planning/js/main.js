@@ -562,7 +562,13 @@ async function loadGPXFromFilename(filename, name) {
             gpxResponse = await fetch(`${WORKER_URL}/${safeFilename}`);
         }
 
-        // Strategy 3: Local Fallback (if user has files)
+        // Strategy 3: Cloud /gpx/ No Extension (fallback)
+        if (!gpxResponse.ok) {
+            const noExt = filename.replace(/\.gpx$/i, '');
+            gpxResponse = await fetch(`${WORKER_URL}/gpx/${encodeURIComponent(noExt)}`);
+        }
+
+        // Strategy 4: Local Fallback (if user has files)
         if (!gpxResponse.ok) {
             console.warn('Cloud fetch failed, trying local fallback...');
             gpxResponse = await fetch(`../gpx/${filename}`);
@@ -602,7 +608,18 @@ async function loadGPXFromLibrary(routeId) {
 
         // Fetch the GPX file
         const safeFilename = encodeURIComponent(route.filename);
-        const gpxResponse = await fetch(`${WORKER_URL}/gpx/${safeFilename}`);
+        let gpxResponse = await fetch(`${WORKER_URL}/gpx/${safeFilename}`);
+
+        if (!gpxResponse.ok) {
+            // Fallback 2: Root
+            gpxResponse = await fetch(`${WORKER_URL}/${safeFilename}`);
+        }
+
+        if (!gpxResponse.ok) {
+            // Fallback 3: No Ext
+            const noExt = route.filename.replace(/\.gpx$/i, '');
+            gpxResponse = await fetch(`${WORKER_URL}/gpx/${encodeURIComponent(noExt)}`);
+        }
 
         if (!gpxResponse.ok) {
             throw new Error(`Failed to fetch GPX file: ${gpxResponse.status} ${gpxResponse.statusText}`);
