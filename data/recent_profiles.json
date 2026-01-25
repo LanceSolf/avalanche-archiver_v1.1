@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "profil_id": 24684,
+    "datum": "2026-01-25 10:10:00",
+    "country_id": 1,
+    "region_id": 1,
+    "subregion_id": 158,
+    "ort": "Lechleiter Alm",
+    "seehoehe": 1773,
+    "latitude": 47.27034,
+    "longitude": 10.20819,
+    "hangneigung": 30,
+    "exposition_id": 2,
+    "loggedon": "2026-01-25 18:05:48",
+    "revision": 1,
+    "location": "Lechleiter Alm",
+    "elevation": 1773,
+    "slope": 30,
+    "neigung": 30,
+    "aspect": 2,
+    "exposition": 2,
+    "comments": "ECTP 0@88.0cm: plötzlicher Bruch (P) (ganzer Block)",
+    "comments_en": "ECTP 0@88.0cm: sudden break (P) (entire block)",
+    "stability_tests": [
+      {
+        "type": {
+          "text": "ECT"
+        },
+        "step": 0,
+        "height": 88,
+        "result": {
+          "text": "propagation (P)"
+        }
+      }
+    ]
+  }
+]
